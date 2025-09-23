@@ -1,0 +1,78 @@
+/* Estilos generales */
+body {
+  background-color: #121212;
+  color: #e0e0e0;
+  font-family: 'Segoe UI', sans-serif;
+  display: flex;
+  justify-content: center;
+  padding: 2rem;
+  margin: 0;
+}
+
+#pedidoForm {
+  width: 100%;
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  background-color: #1e1e1e;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 255, 0, 0.2);
+}
+
+/* Inputs y selects */
+#pedidoForm input,
+#pedidoForm select,
+#pedidoForm button {
+  padding: 0.75rem;
+  border: 1px solid #333;
+  border-radius: 5px;
+  background-color: #2a2a2a;
+  color: #e0e0e0;
+  font-size: 1rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+#pedidoForm input:focus,
+#pedidoForm select:focus {
+  outline: none;
+  border-color: #00ff88;
+  box-shadow: 0 0 5px #00ff88;
+}
+
+/* Placeholder color */
+#pedidoForm input::placeholder {
+  color: #aaa;
+}
+
+/* Botón */
+#pedidoForm button {
+  background-color: #00aa66;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.2s, transform 0.1s;
+}
+
+#pedidoForm button:hover {
+  background-color: #00cc77;
+}
+
+#pedidoForm button:active {
+  transform: scale(0.98);
+}
+
+/* Responsive ajustes */
+@media (max-width: 480px) {
+  #pedidoForm {
+    padding: 1rem;
+  }
+
+  #pedidoForm input,
+  #pedidoForm select,
+  #pedidoForm button {
+    font-size: 0.95rem;
+  }
+}
