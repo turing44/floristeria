@@ -14,6 +14,7 @@ class Pedido extends Model
 
     protected $fillable = [
         "producto",
+        "direccion",
         "destinatario",
         "destinatario_telf",
         "cliente",

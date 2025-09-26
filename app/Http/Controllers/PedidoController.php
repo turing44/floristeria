@@ -21,8 +21,7 @@ class PedidoController extends Controller
             $request->validated()
         );
 
-        return response()
-                ->json($pedido, Response::HTTP_CREATED);
+        return response()->json($pedido, Response::HTTP_CREATED);
     }
 
     public function destroy($id)

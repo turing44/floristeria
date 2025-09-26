@@ -27,6 +27,7 @@ class StorePedidoRequest extends FormRequest
     {
         return [
             "producto" => "required|string|max:255",
+            "direccion" => "required|string|max:255",
             "destinatario" => "required|string|max:255",
             "destinatario_telf" => "required|string|max:255",
             "cliente" => "required|string|max:255",
@@ -41,6 +42,7 @@ class StorePedidoRequest extends FormRequest
     public function messages(): array {
         return [
             "producto.required" => "Debe especificar un producto",
+            "direccion.required" => "Debe especificar la direccion",
             "destinatario.required" => "Debe especificar el destinatario",
             "destinatario_telf.required" => "Debe especificar el telefono del destinatario",
             "cliente.required" => "Debe especificar el cliente",
