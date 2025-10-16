@@ -33,7 +33,8 @@ class PedidoController extends Controller
      */
     public function store(StorePedidoRequest $request)
     {
-        
+        $pedido = Pedido::create($request->validated());
+        return response()->json($pedido, Response::HTTP_CREATED);
     }
 
     /**
@@ -41,7 +42,7 @@ class PedidoController extends Controller
      */
     public function show(Pedido $pedido)
     {
-        //
+        return response()->json($pedido, Response::HTTP_OK);
     }
 
     /**
@@ -57,7 +58,8 @@ class PedidoController extends Controller
      */
     public function update(UpdatePedidoRequest $request, Pedido $pedido)
     {
-        //
+        $pedido->update($request->validated());
+        return response()->json($pedido, Response::HTTP_OK);
     }
 
     /**
@@ -65,6 +67,7 @@ class PedidoController extends Controller
      */
     public function destroy(Pedido $pedido)
     {
-        //
+        $pedido->delete();
+        return response()->json(null, Response::HTTP_NO_CONTENT);
     }
 }

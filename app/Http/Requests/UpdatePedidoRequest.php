@@ -11,7 +11,7 @@ class UpdatePedidoRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,16 @@ class UpdatePedidoRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'producto' => 'required|string|max:100',
+            'direccion' => 'required|string|max:255',
+            'destinatario' => 'required|string|max:100',
+            'destinatario_telf' => 'required|string|max:30',
+            'cliente' => 'required|string|max:100',
+            'cliente_telf' => 'required|string|max:30',
+            'fecha_entrega' => 'required|date|after:today',
+            'observaciones' => 'string|max:255',
+            'horario' => 'string|in:MAÑANA,TARDE',
+            'mensaje' => 'string|max:400',
         ];
     }
 }
