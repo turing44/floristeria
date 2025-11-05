@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Entrega;
 use App\Http\Requests\StoreEntregaRequest;
 use App\Http\Requests\UpdateEntregaRequest;
+use Illuminate\Http\Response;
 
 class EntregaController extends Controller
 {
@@ -13,7 +14,10 @@ class EntregaController extends Controller
      */
     public function index()
     {
-        //
+        return response()->json([
+            "num_entregas" => Entrega::count("id"), 
+            "entregas" => Entrega::all(),
+        ]);
     }
 
     /**
@@ -21,7 +25,9 @@ class EntregaController extends Controller
      */
     public function store(StoreEntregaRequest $request)
     {
-        //
+        $entrega = Entrega::create($request->validated());
+
+        return response()->json($entrega, 201);
     }
 
     /**
@@ -29,7 +35,7 @@ class EntregaController extends Controller
      */
     public function show(Entrega $entrega)
     {
-        //
+        return $entrega;
     }
 
     /**
@@ -37,7 +43,9 @@ class EntregaController extends Controller
      */
     public function update(UpdateEntregaRequest $request, Entrega $entrega)
     {
-        //
+        $entrega->update($request->validated());
+
+        return $entrega;
     }
 
     /**
@@ -45,6 +53,16 @@ class EntregaController extends Controller
      */
     public function destroy(Entrega $entrega)
     {
-        //
+
+        $entrega->delete();
+
+        return response()->json([
+            "message" => "Entrega borrada"
+        ], 204);
+    }
+    
+    public function obtenerEliminadas()
+    {
+        return Entrega::onlyTrashed()->get();
     }
 }

@@ -13,25 +13,33 @@ return new class extends Migration
     {
         Schema::create('entregas', function (Blueprint $table) {
             $table->id();
+
             $table->string('fuente');
             $table->string('producto');
             $table->string('direccion');
             $table->string('codigo_postal');
+
             $table->string('destinatario');
             $table->string('telf_destinatario');
+
             $table->string('cliente');
             $table->string('telf_cliente');
+
             $table->date('fecha_entrega');
-            $table->date('precio');
-            $table->string('observaciones')->nullable();
-            $table->string('horario'); //Enum: 'Mañana', 'Tarde', 'Indiferente'
-            $table->string('mensaje')->nullable();            
-            $table->string('estado'); //Enum: 'Archivado', 'Pendiente', 'Activo'           
 
-            
+            $table->decimal('precio', 10, 2)->default(0.00);
 
-            
+            $table->string('observaciones', 1000)->nullable();
+
+            // ENUMS en mayúsculas
+            $table->enum('horario', ['MAÑANA', 'TARDE', 'INDIFERENTE'])->default('INDIFERENTE');
+            $table->string('mensaje', 500)->nullable();
+            $table->enum('estado', ['ARCHIVADO', 'PENDIENTE', 'ACTIVO'])->default('PENDIENTE');
+
+            $table->softDeletes();
             $table->timestamps();
+
+            
         });
     }
 
