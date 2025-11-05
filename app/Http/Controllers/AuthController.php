@@ -51,7 +51,7 @@ class AuthController extends Controller
 
         $user = $request->user();
 
-        $$user->tokens()->delete();
+        $user->tokens()->delete();
 
         return response()->json([
                 "message" => "Se han eliminiado los tokens del usuario con id: ".$user->id
