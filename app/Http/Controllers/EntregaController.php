@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Entrega;
 use App\Http\Requests\StoreEntregaRequest;
 use App\Http\Requests\UpdateEntregaRequest;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
 class EntregaController extends Controller
@@ -63,6 +64,12 @@ class EntregaController extends Controller
     
     public function obtenerEliminadas()
     {
-        return Entrega::onlyTrashed()->get();
+        //return Entrega::onlyTrashed()->get();
+        return Entrega::all();
+    }
+
+    public function obtenerEntregaEliminada(Request $id)
+    {
+        return Entrega::onlyTrashed()->where("id", $id)->get();
     }
 }

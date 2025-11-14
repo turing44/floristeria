@@ -14,6 +14,7 @@ class Reserva extends Model
     protected $table = "reservas";
 
     protected $fillable = [
+        'producto',
         'cliente',
         'telf_cliente',
         'precio',
@@ -21,8 +22,8 @@ class Reserva extends Model
         'fecha_recogida',
         'observaciones',
         'horario',
-        'destinatario',
-        'mensaje',
+        'nombre_mensaje',
+        'texto_mensaje',
         'estado',
 
     ];

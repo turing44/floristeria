@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Reserva;
 use App\Http\Requests\StoreReservaRequest;
 use App\Http\Requests\UpdateReservaRequest;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
 class ReservaController extends Controller
@@ -54,6 +55,16 @@ class ReservaController extends Controller
      */
     public function destroy(Reserva $reserva)
     {
-        //
+        return response()->json($reserva->delete(), 204);
     }
+
+
+    public function obtenerEliminadas() {
+        return Reserva::onlyTrashed()->get();
+    }
+
+    public function obtenerReservaEliminada(Request $id) {
+        return Reserva::onlyTrashed()->find($id);
+    }
+
 }
