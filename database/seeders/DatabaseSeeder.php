@@ -2,6 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Models\Entrega;
+use App\Models\Reserva;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -23,5 +25,8 @@ class DatabaseSeeder extends Seeder
             'email' => 'admin@admin.com',
             'password' => Hash::make('1234')
         ]);
+
+        Entrega::factory()->count(3)->create();
+        Reserva::factory()->count(3)->create();
     }
 }

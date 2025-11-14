@@ -21,14 +21,15 @@ class ReservaFactory extends Factory
 
         return [
             'cliente' => $this->faker->name(),
+            'producto' => $this->faker->word(),
             'telf_cliente' => $this->faker->phoneNumber(),
             'precio' => $this->faker->randomFloat(2, 10, 300),
             'dinero_a_cuenta' => $this->faker->randomFloat(2, 0, 150),
-            'fecha_entrega' => $this->faker->dateTimeBetween('now', '+1 month'),
+            'fecha_recogida' => $this->faker->dateTimeBetween('now', '+1 month'),
             'observaciones' => $this->faker->optional()->sentence(),
             'horario' => $this->faker->randomElement($horarios),
-            'destinatario' => $this->faker->optional()->name(),
-            'mensaje' => $this->faker->optional()->sentence(),
+            'nombre_mensaje' => $this->faker->name(),
+            'texto_mensaje' => $this->faker->optional()->sentence(),
             'estado' => $this->faker->randomElement($estados),
         ];
     }

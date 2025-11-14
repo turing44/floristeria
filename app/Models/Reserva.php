@@ -18,7 +18,7 @@ class Reserva extends Model
         'telf_cliente',
         'precio',
         'dinero_a_cuenta',
-        'fecha_entrega',
+        'fecha_recogida',
         'observaciones',
         'horario',
         'destinatario',

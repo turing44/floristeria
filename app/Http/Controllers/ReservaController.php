@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Reserva;
 use App\Http\Requests\StoreReservaRequest;
 use App\Http\Requests\UpdateReservaRequest;
+use Illuminate\Http\Response;
 
 class ReservaController extends Controller
 {
@@ -13,7 +14,13 @@ class ReservaController extends Controller
      */
     public function index()
     {
-        //
+
+        $reservas = Reserva::all();
+        return response()->json([
+            "numero" => $reservas->count(),
+            "data" => $reservas,
+            
+        ], 200);
     }
 
     /**
@@ -21,7 +28,9 @@ class ReservaController extends Controller
      */
     public function store(StoreReservaRequest $request)
     {
-        //
+        $reserva = Reserva::create($request->validated());
+
+        return response()->json($reserva, Response::HTTP_CREATED);
     }
 
     /**
@@ -29,7 +38,7 @@ class ReservaController extends Controller
      */
     public function show(Reserva $reserva)
     {
-        //
+        return $reserva;
     }
 
     /**

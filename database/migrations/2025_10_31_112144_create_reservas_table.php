@@ -21,7 +21,7 @@ return new class extends Migration
             // el decimal es seguro para eel dinero
             $table->decimal('precio', 10, 2)->default(0.00);
             $table->decimal('dinero_a_cuenta', 10, 2)->default(0.00);
-            $table->date('fecha_entrega');
+            $table->date('fecha_recogida');
             $table->string('observaciones', 1000)->nullable();
 
             // Enums en MAYÚSCULAS
