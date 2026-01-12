@@ -6,18 +6,17 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up()
     {
         Schema::create('entregas', function (Blueprint $table) {
             $table->id();
             
-            // RELACIÓN
+            // VÍNCULO CON EL PADRE
             $table->foreignId('pedido_id')->constrained('pedidos')->onDelete('cascade');
             
             $table->string('fuente')->nullable(); 
+            
+            // DATOS LOGÍSTICOS EXCLUSIVOS DE ENTREGA
             $table->string('direccion');
             $table->string('codigo_postal');
             $table->string('destinatario_nombre');
@@ -25,6 +24,7 @@ return new class extends Migration
             
             $table->dateTime('fecha_entrega')->nullable();
             $table->enum('horario', ['MAÑANA', 'TARDE', 'INDIFERENTE'])->default('INDIFERENTE');
+
             $table->string('mensaje_dedicatoria', 500)->nullable(); 
             
             $table->timestamps();
@@ -32,9 +32,6 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('entregas');
