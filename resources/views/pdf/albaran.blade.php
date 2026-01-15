@@ -5,7 +5,6 @@
     
     <base href="{{ url('/') }}"> 
     
-    <!--<link href="file:///C:/Users/Kiuba/Desktop/INSTITUTO/2DAM/Proyecto Intermudular/floristeria-mainV2/public/css/pedido.css" rel="stylesheet" type="text/css">-->
     <style>
         @font-face {
         font-family: "Lucida Calligraphy";
@@ -220,6 +219,14 @@
 <body>
     @php
         use Carbon\Carbon;
+        // 🛠️ PUENTE DE SEGURIDAD (MERRICK FIX):
+        // El controlador nos manda 'entrega', pero esta vista antigua usa 'pedido'.
+        // Definimos 'pedido' aquí sacándolo de la entrega para que el resto del HTML funcione igual.
+        if(isset($entrega)) {
+            $pedido = $entrega->pedido;
+            // Aseguramos que la relación inversa esté cargada para evitar bucles raros
+            $pedido->setRelation('entrega', $entrega); 
+        }
     @endphp
 
     <div class="lineasFijas"></div>
@@ -273,7 +280,8 @@
                     <p>{{ $pedido->entrega->fecha_entrega ? Carbon::parse($pedido->entrega->fecha_entrega)->format('d') : '?' }}</p>
                 </div>
                 <div class="horario">
-                    <p>{{$pedido->horario}}</p>
+                    {{-- OJO: El horario ahora está en la entrega, no en el pedido --}}
+                    <p>{{$pedido->entrega->horario ?? $pedido->horario}}</p>
                 </div>
                 <div id="colorAzul" style="text-align: center;">
                     <p>Entregado</p>
@@ -330,7 +338,7 @@
                     <p>{{ $pedido->entrega->fecha_entrega ? Carbon::parse($pedido->entrega->fecha_entrega)->format('d') : '?' }}</p>
                 </div>
                 <div class="horario">
-                    <p>{{$pedido->horario}}</p>
+                   <p>{{$pedido->entrega->horario ?? $pedido->horario}}</p>
                 </div>
                 <div class="checkbox">
                         <label>
