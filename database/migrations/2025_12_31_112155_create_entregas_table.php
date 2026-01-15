@@ -14,7 +14,7 @@ return new class extends Migration
             // VÍNCULO CON EL PADRE
             $table->foreignId('pedido_id')->constrained('pedidos')->onDelete('cascade');
             
-            $table->string('fuente')->nullable(); 
+            $table->string('fuente'); 
             
             // DATOS LOGÍSTICOS EXCLUSIVOS DE ENTREGA
             $table->string('direccion');
@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('destinatario_nombre');
             $table->string('destinatario_telf');
             
-            $table->dateTime('fecha_entrega')->nullable();
+            $table->dateTime('fecha_entrega');
             $table->enum('horario', ['MAÑANA', 'TARDE', 'INDIFERENTE'])->default('INDIFERENTE');
 
             $table->string('mensaje_dedicatoria', 500)->nullable(); 

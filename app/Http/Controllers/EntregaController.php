@@ -66,7 +66,7 @@ class EntregaController extends Controller
                     'cliente_nombre' => $datos['cliente'],      
                     'cliente_telf'   => $datos['telf_cliente'],  
                     'precio'         => $datos['precio'],
-                    'descripcion'    => $datos['producto'],      
+                    'producto'    => $datos['producto'],      
                     'estado'         => $datos['estado'] ?? 'PENDIENTE',
                     'observaciones'  => $datos['observaciones'] ?? null,
                     'tipo_pedido'    => 'DOMICILIO',

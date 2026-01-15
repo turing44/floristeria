@@ -20,10 +20,11 @@ return new class extends Migration
 
         $table->enum('tipo_pedido', ['DOMICILIO', 'TIENDA'])->default('TIENDA');
         // DATOS DEL PEDIDO
-        $table->string('descripcion')->nullable(); 
+        $table->string('producto'); 
         $table->decimal('precio', 10, 2); 
         $table->string('estado')->default('pendiente'); 
-        $table->string('horario')->nullable(); 
+        $table->enum('horario', ['MAÑANA', 'TARDE','INDIFERENTE'])->default('INDIFERENTE');
+        
         $table->text('observaciones')->nullable(); 
         
         // DATOS DEL CLIENTE

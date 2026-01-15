@@ -1,5 +1,5 @@
 {
-    "fuente": "Glovo", NULL
+    "fuente": "Glovo", 
     "producto": "Ramo de rosas rojas",
     "direccion": "Calle de las Flores 123, Madrid",
     "codigo_postal": "28001",
@@ -9,8 +9,8 @@
     "telf_cliente": "+34 698 765 432",
     "fecha_entrega": "2025-11-10",
     "precio": 49.99,
-    "observaciones": "Entregar antes de las 12:00. Llamar al llegar.", NULL
-    "horario": "MAÑANA", MAÑANA TARDE INDIFERENTE
-    "mensaje": "Feliz cumpleaños, te mereces todas las flores del mundo.", NULL
-    "estado": "PENDIENTE" PENDIENTE ARCHIVADO
+    "observaciones": "Entregar antes de las 12:00. Llamar al llegar.", 
+    "horario": "MAÑANA", 
+    "mensaje": "Feliz cumpleaños, te mereces todas las flores del mundo.",
+    "estado": "PENDIENTE" 
 }
