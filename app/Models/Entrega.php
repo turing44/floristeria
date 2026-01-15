@@ -8,24 +8,22 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Entrega extends Model
 {
-    /** @use HasFactory<\Database\Factories\EntregaFactory> */
     use HasFactory, SoftDeletes;
 
     protected $table = "entregas";
 
     protected $fillable = [
-        'pedido_id',            
+        'pedido_id',
         'fuente',
-        'direccion',            
+        'direccion',
         'codigo_postal',
-        'destinatario_nombre',  
-        'destinatario_telf',    
+        'destinatario_nombre', 
+        'destinatario_telf', 
         'fecha_entrega',
-        'horario',              
-        'mensaje_dedicatoria',  
+        'horario',
+        'mensaje_dedicatoria',
     ];
 
-    // Relación inversa: Una entrega pertenece a un pedido
     public function pedido()
     {
         return $this->belongsTo(Pedido::class);

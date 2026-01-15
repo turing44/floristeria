@@ -10,15 +10,15 @@ class Pedido extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id',
-        'guest_token_id',
-        'tipo_pedido',      
-        'descripcion',
-        'precio',
-        'estado',
-        'observaciones',
         'cliente_nombre',
         'cliente_telf',
+        'precio',
+        'descripcion',    
+        'estado',
+        'observaciones',
+        'tipo_pedido',    
+        'user_id',   
+        'guest_token_id'
     ];
 
     // --- RELACIONES ---
@@ -37,8 +37,6 @@ class Pedido extends Model
     {
         return $this->hasMany(Pago::class);
     }
-
-    // --- HERENCIA / ESPECIALIZACIÓN ---
 
     public function entrega()
     {
