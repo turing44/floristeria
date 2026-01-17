@@ -1,15 +1,11 @@
 @php
-    // Obtenemos la ruta real del archivo
     $path = public_path('fonts/LucidaUnicodeCalligraphy.ttf');
     
-    // Verificamos que exista para evitar errores fatales
     if (file_exists($path)) {
         $type = pathinfo($path, PATHINFO_EXTENSION);
         $data = file_get_contents($path);
-        // Creamos la cadena base64 lista para CSS
         $base64Font = 'data:font/' . $type . ';base64,' . base64_encode($data);
     } else {
-        // Fallback por si acaso
         $base64Font = ''; 
     }
 @endphp
@@ -17,22 +13,16 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    
     <base href="{{ url('/') }}"> 
-    
     <style>
         @font-face {
             font-family: "Lucida Calligraphy";
-            /* Usamos la variable que cocinamos arriba */
             src: url("{!! $base64Font !!}") format("truetype");
             font-weight: normal;
             font-style: normal;
         }
 
-
-        .body{
-            background-color: red;
-        }
+        .body{ background-color: red; }
         .segmento{
             display: flex;
             flex-direction: row;
@@ -40,10 +30,9 @@
             align-items: flex-start, stretch;
             width: 100%;
             gap: 40px;
-            /*margin-top: 10px;*/
-            height: 99mm; /* cada uno ocupa un tercio de la hoja visible */
+            height: 99mm; 
             box-sizing: border-box;
-            page-break-inside: avoid; /* evita que se corten entre páginas */
+            page-break-inside: avoid; 
         }
         .segmentoMensaje{
             display: flex;
@@ -52,9 +41,9 @@
             align-items: center;
             width: 100%;
             gap: 40px;
-            height: 99mm; /* cada uno ocupa un tercio de la hoja visible */
+            height: 99mm; 
             box-sizing: border-box;
-            page-break-inside: avoid; /* evita que se corten entre páginas */
+            page-break-inside: avoid; 
         }
         .bloqueContacto{
             display: flex;
@@ -63,8 +52,8 @@
             flex: 1;
         }
         .bloqueContacto p {
-        margin: 4px 0; /* Reduce espacio vertical entre etiquetas */
-        padding-top: 5px;
+            margin: 4px 0; 
+            padding-top: 5px;
         }
         .idPedido{
             display: flex;
@@ -73,28 +62,19 @@
             align-items: flex-start;
             justify-content: flex-start;
             flex:1;
-            /*padding-left: 40px;*/
         }
         .bloqueFecha {
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-start;
-        align-items: center;
-        flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            flex: 1;
         }
         .infoPedido{
             display: flex;
             flex-direction: column;
         }
-        .direccion{
-            display: flex;
-            flex-direction: row;
-        }
-        .producto{
-            display: flex;
-            flex-direction: row;
-        }
-        .fuente{
+        .direccion, .producto, .fuente{
             display: flex;
             flex-direction: row;
         }
@@ -105,34 +85,28 @@
             padding: 10px;
             resize: none;
         }
-        .fecha{
-            display: flex;
-        }
+        .fecha{ display: flex; }
         .fechaGigante{
             display: flex;
             justify-content: flex-start;
             color: red;
             font-size: 75px;
         }
-        .fechaGigante p{
-            margin: 7px 0;
-        }
+        .fechaGigante p{ margin: 7px 0; }
         .horario{
             display: flex;
             justify-content: flex-start;
             color: red;
             font-size: 30px;
         }
-        .horario p{
-            margin: 7px 0;
-        }
+        .horario p{ margin: 7px 0; }
         .checkbox input[type="checkbox"]{
             margin: 36px 0;
             transform: scale(6);
         }
         .confirmacionEntrega{
-        margin: 0%;
-        font-size: 50px;
+            margin: 0%;
+            font-size: 50px;
         }
         .divVacio {
             display: flex;
@@ -141,7 +115,6 @@
             flex: 1;
             min-width: 0;
         }
-
         .mensajeDeLado{
             display: flex;
             height: 250px; 
@@ -178,9 +151,7 @@
             min-width: 0;
             font-family: "Lucida Calligraphy";
         }
-        #colorAzul{
-        color: blue;
-        }
+        #colorAzul{ color: blue; }
         .lineasFijas {
             position: fixed;        
             left: 0;
@@ -190,9 +161,7 @@
             pointer-events: none;
             z-index: 1000;
         }
-
-        .lineasFijas::before,
-        .lineasFijas::after {
+        .lineasFijas::before, .lineasFijas::after {
             content: "";
             position: absolute;
             top: 10mm;            
@@ -200,47 +169,34 @@
             width: 0.3px;
             background: #000;
         }
-
-        .lineasFijas::before {
-            left: 69mm;            
-        }
-
-        .lineasFijas::after {
-            right: 69mm;          
-        }
+        .lineasFijas::before { left: 69mm; }
+        .lineasFijas::after { right: 69mm; }
         @media print {
-        @page {
-            size: A4;
-            /*margin-left: 0;
-            margin-right: 0;*/
-            margin: 0;
+            @page {
+                size: A4;
+                margin: 0;
+            }
+            html,body {
+                margin: 0;
+                padding: 0;
+                height: 297mm;
+                box-sizing: border-box;
+            }
+            .segmento {
+                padding: 5mm;
+                page-break-inside: avoid; 
+            }
         }
-
-        html,body {
-            margin: 0;
-            padding: 0;
-            height: 297mm;
-            box-sizing: border-box;
-
-        }
-        .segmento {
-            padding: 5mm;
-            page-break-inside: avoid; /* Evita que se corte entre páginas */
-        }
-        }
-
      </style>
 </head>
 
 <body>
     @php
         use Carbon\Carbon;
-        // 🛠️ PUENTE DE SEGURIDAD (MERRICK FIX):
-        // El controlador nos manda 'entrega', pero esta vista antigua usa 'pedido'.
-        // Definimos 'pedido' aquí sacándolo de la entrega para que el resto del HTML funcione igual.
+        // Obtenemos el pedido desde la entrega
         if(isset($entrega)) {
             $pedido = $entrega->pedido;
-            // Aseguramos que la relación inversa esté cargada para evitar bucles raros
+            // Aseguramos relación inversa
             $pedido->setRelation('entrega', $entrega); 
         }
     @endphp
@@ -278,7 +234,8 @@
                     
                     <div class="fuente">
                         <p>Fuente: </p>
-                        <p id="colorAzul">{{ $pedido->entrega->fuente ?? 'Tienda' }}</p>
+                        {{-- FIX: Ahora está en pedido --}}
+                        <p id="colorAzul">{{ $pedido->fuente ?? 'Tienda' }}</p>
                     </div>
                 </div>
                 
@@ -290,14 +247,16 @@
             
             <div class="bloqueFecha">
                 <div id="colorAzul">
-                    <p>{{ $pedido->entrega->fecha_entrega ? Carbon::parse($pedido->entrega->fecha_entrega)->format('d/m/Y') : '--/--' }}</p>
+                    {{-- FIX: Ahora es $pedido->fecha --}}
+                    <p>{{ $pedido->fecha ? Carbon::parse($pedido->fecha)->format('d/m/Y') : '--/--' }}</p>
                 </div>
                 <div class="fechaGigante">
-                    <p>{{ $pedido->entrega->fecha_entrega ? Carbon::parse($pedido->entrega->fecha_entrega)->format('d') : '?' }}</p>
+                    {{-- FIX: Ahora es $pedido->fecha --}}
+                    <p>{{ $pedido->fecha ? Carbon::parse($pedido->fecha)->format('d') : '?' }}</p>
                 </div>
                 <div class="horario">
-                    {{-- OJO: El horario ahora está en la entrega, no en el pedido --}}
-                    <p>{{$pedido->entrega->horario ?? $pedido->horario}}</p>
+                    {{-- FIX: Ahora es $pedido->horario --}}
+                    <p>{{ $pedido->horario }}</p>
                 </div>
                 <div id="colorAzul" style="text-align: center;">
                     <p>Entregado</p>
@@ -336,7 +295,8 @@
                     
                     <div class="fuente">
                         <p>Fuente: </p>
-                        <p id="colorAzul">{{ $pedido->entrega->fuente ?? 'Tienda' }}</p>
+                        {{-- FIX: Ahora está en pedido --}}
+                        <p id="colorAzul">{{ $pedido->fuente ?? 'Tienda' }}</p>
                     </div>
                 </div>
                 
@@ -348,13 +308,16 @@
             
             <div class="bloqueFecha">
                 <div id="colorAzul">
-                    <p>{{ $pedido->entrega->fecha_entrega ? Carbon::parse($pedido->entrega->fecha_entrega)->format('d/m/Y') : '--/--' }}</p>
+                    {{-- FIX: Ahora es $pedido->fecha --}}
+                    <p>{{ $pedido->fecha ? Carbon::parse($pedido->fecha)->format('d/m/Y') : '--/--' }}</p>
                 </div>
                 <div class="fechaGigante">
-                    <p>{{ $pedido->entrega->fecha_entrega ? Carbon::parse($pedido->entrega->fecha_entrega)->format('d') : '?' }}</p>
+                    {{-- FIX: Ahora es $pedido->fecha --}}
+                    <p>{{ $pedido->fecha ? Carbon::parse($pedido->fecha)->format('d') : '?' }}</p>
                 </div>
                 <div class="horario">
-                   <p>{{$pedido->entrega->horario ?? $pedido->horario}}</p>
+                    {{-- FIX: Ahora es $pedido->horario --}}
+                    <p>{{ $pedido->horario }}</p>
                 </div>
                 <div class="checkbox">
                         <label>
@@ -367,13 +330,8 @@
         <div class="segmentoMensaje">
             <div class="mensajeDeLado">
                 <p>
-                    @if($pedido->entrega && $pedido->entrega->mensaje_dedicatoria)
-                        "{{ $pedido->entrega->mensaje_dedicatoria }}"
-                    @elseif($pedido->reserva && $pedido->reserva->texto_mensaje)
-                        "{{ $pedido->reserva->texto_mensaje }}"
-                    @else
-                        - Sin Mensaje -
-                    @endif
+                    {{-- FIX: Mensaje unificado en Pedido --}}
+                    "{{ $pedido->texto_mensaje ?? '- Sin Mensaje -' }}"
                 </p>
             </div>
             <div class="divVacio"></div>
