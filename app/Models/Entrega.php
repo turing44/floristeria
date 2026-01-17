@@ -14,14 +14,10 @@ class Entrega extends Model
 
     protected $fillable = [
         'pedido_id',
-        'fuente',
         'direccion',
         'codigo_postal',
         'destinatario_nombre', 
         'destinatario_telf', 
-        'fecha_entrega',
-        'horario',
-        'mensaje_dedicatoria',
     ];
 
     public function pedido()

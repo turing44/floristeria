@@ -6,38 +6,36 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(){
         Schema::create('pedidos', function (Blueprint $table) {
-        $table->id(); // id
+        $table->id(); 
         
-        // RELACIONES (Claves foráneas)
         $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
         $table->foreignId('guest_token_id')->nullable()->constrained('guest_tokens')->nullOnDelete();
 
-
         $table->enum('tipo_pedido', ['DOMICILIO', 'TIENDA'])->default('TIENDA');
-        // DATOS DEL PEDIDO
+
+        $table->string('fuente')->nullable()->default('local'); 
         $table->string('producto'); 
         $table->decimal('precio', 10, 2); 
-        $table->string('estado')->default('pendiente'); 
-        $table->enum('horario', ['MAÑANA', 'TARDE','INDIFERENTE'])->default('INDIFERENTE');
+        $table->date('fecha'); 
         
-        $table->text('observaciones')->nullable(); 
-        
-        // DATOS DEL CLIENTE
         $table->string('cliente_nombre'); 
         $table->string('cliente_telf'); 
         
+        $table->enum('horario', ['MAÑANA', 'TARDE','INDIFERENTE'])->default('INDIFERENTE');
+        $table->string('estado')->default('PENDIENTE'); 
+        
+        $table->text('observaciones')->nullable(); 
+
+        $table->string('nombre_mensaje')->nullable();
+        $table->text('texto_mensaje')->nullable();
+        
         $table->timestamps();
+        $table->softDeletes(); 
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('pedidos');

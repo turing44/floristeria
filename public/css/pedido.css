@@ -1,7 +1,7 @@
 @font-face {
   font-family: "Lucida Calligraphy";
-  src: url("{{ asset('fonts/LucidaUnicodeCalligraphyBold.ttf') }}") format("truetype"),
-  url("{{ asset('fonts/LucidaUnicodeCalligraphy.ttf') }}") format("truetype");
+  src: url("../fonts/LucidaUnicodeCalligraphyBold.ttf") format("truetype"),
+  url("../fonts/LucidaUnicodeCalligraphy.ttf") format("truetype");
   font-weight: normal;
   font-style: normal;
 }
@@ -153,6 +153,7 @@
     text-align: center;
     flex: 1;
     min-width: 0;
+    font-family: "Lucida Calligraphy", sans-serif;
 }
 #colorAzul{
   color: blue;

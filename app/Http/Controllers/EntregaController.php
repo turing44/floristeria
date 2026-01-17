@@ -15,29 +15,29 @@ class EntregaController extends Controller
 
     public function index(Request $request)
     {
-        // 1. Cargamos siempre la relación con el padre (Pedido)
         $query = Entrega::with('pedido');
 
-        // 2. FILTRO DE ESTADO (PENDIENTE, PAGADO...)
         if ($request->has('estado')) {
             $estado = $request->input('estado');
-            // Buscamos dentro de la relación 'pedido'
             $query->whereHas('pedido', function($q) use ($estado) {
                 $q->where('estado', $estado);
             });
         }
 
-        // 3. ORDENACIÓN
         if ($request->has('ordenar')) {
             switch ($request->input('ordenar')) {
                 case 'cp':
                     $query->orderBy('codigo_postal', 'asc');
                     break;
                 case 'fecha_asc':
-                    $query->orderBy('fecha_entrega', 'asc');
+                    $query->join('pedidos', 'entregas.pedido_id', '=', 'pedidos.id')
+                          ->orderBy('pedidos.fecha', 'asc')
+                          ->select('entregas.*'); 
                     break;
                 case 'fecha_desc':
-                    $query->orderBy('fecha_entrega', 'desc');
+                    $query->join('pedidos', 'entregas.pedido_id', '=', 'pedidos.id')
+                          ->orderBy('pedidos.fecha', 'desc')
+                          ->select('entregas.*');
                     break;
                 default:
                     $query->latest();
@@ -61,33 +61,30 @@ class EntregaController extends Controller
         try {
             return DB::transaction(function () use ($datos) {
                 
-                // A. Crear el PADRE (Facturación)
                 $pedido = Pedido::create([
                     'cliente_nombre' => $datos['cliente'],      
-                    'cliente_telf'   => $datos['telf_cliente'],  
+                    'cliente_telf'   => $datos['telf_cliente'],   
                     'precio'         => $datos['precio'],
-                    'producto'    => $datos['producto'],      
+                    'producto'       => $datos['producto'],      
                     'estado'         => $datos['estado'] ?? 'PENDIENTE',
                     'observaciones'  => $datos['observaciones'] ?? null,
                     'tipo_pedido'    => 'DOMICILIO',
+                    
+                    'fuente'         => $datos['fuente'] ?? null,
+                    'fecha'          => $datos['fecha_entrega'], 
+                    'horario'        => $datos['horario'] ?? 'INDIFERENTE',
+                    'texto_mensaje'  => $datos['mensaje'] ?? null, 
+                    'nombre_mensaje' => null, 
+                    
                     'user_id'        => null, 
                     'guest_token_id' => null, 
                 ]);
 
-                // B. Crear la HIJA 
                 $entrega = $pedido->entrega()->create([
-                    'fuente'              => $datos['fuente'] ?? null,
                     'direccion'           => $datos['direccion'],
                     'codigo_postal'       => $datos['codigo_postal'],
-                    
-                    // --- MAPEO DE NOMBRES (JSON -> BD) ---
                     'destinatario_nombre' => $datos['destinatario'],      
                     'destinatario_telf'   => $datos['telf_destinatario'], 
-                    'mensaje_dedicatoria' => $datos['mensaje'] ?? null,   
-                    // -------------------------------------
-                    
-                    'fecha_entrega'       => $datos['fecha_entrega'],
-                    'horario'             => $datos['horario'] ?? 'INDIFERENTE',
                 ]);
 
                 return response()->json($entrega->load('pedido'), 201);
@@ -97,8 +94,6 @@ class EntregaController extends Controller
             return response()->json([
                 'ERROR' => 'Error creando la entrega',
                 'DETALLE' => $e->getMessage(),
-                'ARCHIVO' => $e->getFile(),
-                'LINEA' => $e->getLine()
             ], 500);
         }
     }
@@ -114,34 +109,38 @@ class EntregaController extends Controller
     {
         $datos = $request->validated();
         
-        // Preparamos el array con los nombres de la BD
-        $datosBD = [];
-
-        // Mapeo manual de campos conflictivos (si vienen en la petición)
-        if (isset($datos['destinatario']))      $datosBD['destinatario_nombre'] = $datos['destinatario'];
-        if (isset($datos['telf_destinatario'])) $datosBD['destinatario_telf'] = $datos['telf_destinatario'];
-        if (isset($datos['mensaje']))           $datosBD['mensaje_dedicatoria'] = $datos['mensaje'];
+        $datosEntrega = [];
+        if (isset($datos['destinatario']))      $datosEntrega['destinatario_nombre'] = $datos['destinatario'];
+        if (isset($datos['telf_destinatario'])) $datosEntrega['destinatario_telf'] = $datos['telf_destinatario'];
+        if (isset($datos['direccion']))         $datosEntrega['direccion'] = $datos['direccion'];
+        if (isset($datos['codigo_postal']))     $datosEntrega['codigo_postal'] = $datos['codigo_postal'];
         
-        // Campos directos (que se llaman igual)
-        if (isset($datos['direccion']))     $datosBD['direccion'] = $datos['direccion'];
-        if (isset($datos['codigo_postal'])) $datosBD['codigo_postal'] = $datos['codigo_postal'];
-        if (isset($datos['fecha_entrega'])) $datosBD['fecha_entrega'] = $datos['fecha_entrega'];
-        if (isset($datos['horario']))       $datosBD['horario'] = $datos['horario'];
-        if (isset($datos['fuente']))        $datosBD['fuente'] = $datos['fuente'];
-
-        // Actualizamos la entrega
-        if (!empty($datosBD)) {
-            $entrega->update($datosBD);
+        if (!empty($datosEntrega)) {
+            $entrega->update($datosEntrega);
         }
 
-        // Si también quieres actualizar datos del padre (precio/cliente), hazlo aquí:
-        // if (isset($datos['precio'])) $entrega->pedido->update(['precio' => $datos['precio']]);
+        $datosPedido = [];
+        if (isset($datos['cliente']))       $datosPedido['cliente_nombre'] = $datos['cliente'];
+        if (isset($datos['telf_cliente']))  $datosPedido['cliente_telf'] = $datos['telf_cliente'];
+        if (isset($datos['precio']))        $datosPedido['precio'] = $datos['precio'];
+        if (isset($datos['producto']))      $datosPedido['producto'] = $datos['producto'];
+        if (isset($datos['estado']))        $datosPedido['estado'] = $datos['estado'];
+        if (isset($datos['observaciones'])) $datosPedido['observaciones'] = $datos['observaciones'];
+        if (isset($datos['fuente']))        $datosPedido['fuente'] = $datos['fuente'];
+        if (isset($datos['fecha_entrega'])) $datosPedido['fecha'] = $datos['fecha_entrega'];
+        if (isset($datos['horario']))       $datosPedido['horario'] = $datos['horario'];
+        if (isset($datos['mensaje']))       $datosPedido['texto_mensaje'] = $datos['mensaje'];
+
+        if (!empty($datosPedido)) {
+            $entrega->pedido->update($datosPedido);
+        }
 
         return $entrega->load('pedido');
     }
 
     public function destroy(Entrega $entrega)
     {
+        $entrega->pedido->delete(); 
         $entrega->delete(); 
         return response()->json(["message" => "Entrega archivada correctamente"], 204);
     }
@@ -159,7 +158,6 @@ class EntregaController extends Controller
             2 => ["pipe", "w"]
         ];
 
-        // Llamada al script de Node
         $process = proc_open('node "' . base_path('resources/js/generar_pdf.cjs') . '"', $descriptorspec, $pipes);
 
         if (is_resource($process)) {
@@ -186,8 +184,6 @@ class EntregaController extends Controller
 
         return response('Error iniciando Node.js', 500);
     }
-
-    // --- MÉTODOS DE PAPELERA (SOFT DELETES) ---
 
     public function obtenerEliminadas()
     {

@@ -1,3 +1,18 @@
+@php
+    // Obtenemos la ruta real del archivo
+    $path = public_path('fonts/LucidaUnicodeCalligraphy.ttf');
+    
+    // Verificamos que exista para evitar errores fatales
+    if (file_exists($path)) {
+        $type = pathinfo($path, PATHINFO_EXTENSION);
+        $data = file_get_contents($path);
+        // Creamos la cadena base64 lista para CSS
+        $base64Font = 'data:font/' . $type . ';base64,' . base64_encode($data);
+    } else {
+        // Fallback por si acaso
+        $base64Font = ''; 
+    }
+@endphp
 <!DOCTYPE html>
 <html>
 <head>
@@ -7,11 +22,11 @@
     
     <style>
         @font-face {
-        font-family: "Lucida Calligraphy";
-        src: url("{{ asset('fonts/LucidaUnicodeCalligraphyBold.ttf') }}") format("truetype"),
-        url("{{ asset('fonts/LucidaUnicodeCalligraphy.ttf') }}") format("truetype");
-        font-weight: normal;
-        font-style: normal;
+            font-family: "Lucida Calligraphy";
+            /* Usamos la variable que cocinamos arriba */
+            src: url("{!! $base64Font !!}") format("truetype");
+            font-weight: normal;
+            font-style: normal;
         }
 
 
@@ -161,6 +176,7 @@
             text-align: center;
             flex: 1;
             min-width: 0;
+            font-family: "Lucida Calligraphy";
         }
         #colorAzul{
         color: blue;
@@ -257,7 +273,7 @@
                     
                     <div class="producto">
                         <p>Producto: </p>
-                        <p id="colorAzul">{{ $pedido->descripcion }}</p>
+                        <p id="colorAzul">{{ $pedido->producto }}</p>
                     </div>
                     
                     <div class="fuente">
@@ -315,7 +331,7 @@
                     
                     <div class="producto">
                         <p>Producto: </p>
-                        <p id="colorAzul">{{ $pedido->descripcion }}</p>
+                        <p id="colorAzul">{{ $pedido->producto }}</p>
                     </div>
                     
                     <div class="fuente">

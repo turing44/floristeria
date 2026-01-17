@@ -4,24 +4,28 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Pedido extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
+        'user_id',   
+        'guest_token_id',
+        'tipo_pedido',    
+        'fuente',
+        'producto',    
+        'precio',
+        'fecha',
         'cliente_nombre',
         'cliente_telf',
-        'precio',
-        'descripcion',    
+        'horario',
         'estado',
         'observaciones',
-        'tipo_pedido',    
-        'user_id',   
-        'guest_token_id'
+        'nombre_mensaje',
+        'texto_mensaje'
     ];
-
-    // --- RELACIONES ---
 
     public function user()
     {

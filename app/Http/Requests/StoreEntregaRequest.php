@@ -3,6 +3,8 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
 class StoreEntregaRequest extends FormRequest
 {
@@ -14,56 +16,48 @@ class StoreEntregaRequest extends FormRequest
     public function rules(): array
     {
         return [
-            
-            'cliente'           => 'required|string|max:255',
-            'telf_cliente'      => 'required|string|max:20',
-            'precio'            => 'required|numeric|min:0',
-            'producto'          => 'required|string', // Descripción
-            'estado'            => 'nullable|string', // PENDIENTE por defecto
-            'observaciones'     => 'nullable|string',
-
-            // --- DATOS DE LOGÍSTICA (Van a la Entrega) ---
-            'direccion'         => 'required|string|max:255', // OBLIGATORIO
+            'fuente'            => 'nullable|string',
+            'producto'          => 'required|string',
+            'direccion'         => 'required|string|max:255',
             'codigo_postal'     => 'required|string|max:10',
             'destinatario'      => 'required|string|max:255',
             'telf_destinatario' => 'required|string|max:20',
+            'cliente'           => 'required|string|max:255',
+            'telf_cliente'      => 'required|string|max:20',
             'fecha_entrega'     => 'required|date',
+            'precio'            => 'required|numeric|min:0',
+            'observaciones'     => 'nullable|string',
             'horario'           => 'nullable|in:MAÑANA,TARDE,INDIFERENTE',
             'mensaje'           => 'nullable|string',
-            'fuente'            => 'nullable|string',
+            'estado'            => 'nullable|string'
         ];
     }
-    /**
-     * Mensajes de error personalizados
-     */
+
     public function messages(): array
     {
         return [
-          
-            
-            'fuente.required' => '¡Eh! Necesito saber de dónde viene el pedido (fuente).',
-            'fuente.in'       => 'La fuente solo puede ser: Glovo, Web, Tienda o Telefono.',
-
-            // 2. Errores del Producto
-            'producto.required' => 'No podemos vender aire. Escribe qué producto es.',
-            
-            // 3. Errores de Precios
-            'precio.required' => 'Pon un precio, que esto no es una ONG.',
-            'precio.numeric'  => 'El precio tiene que ser un número (usa punto para decimales).',
-            'precio.min'      => 'El precio no puede ser negativo.',
-
-            // 4. Errores de Fechas
-            'fecha_entrega.required'       => '¿Cuándo lo entregamos? Falta la fecha.',
-            'fecha_entrega.date'           => 'Formato de fecha inválido.',
-            'fecha_entrega.after_or_equal' => 'No tenemos un DeLorean. La fecha debe ser hoy o en el futuro.',
-
-            // 5. Errores de Cliente/Destinatario
-            'cliente.required'          => 'Necesito el nombre del cliente.',
-            'telf_cliente.required'     => 'Falta el teléfono del cliente.',
-            'destinatario.required'     => '¿A quién se lo llevamos? Falta el destinatario.',
-            
-            // 6. Genéricos (Atajo para todos los 'required' que no hayas definido arriba)
-            'required' => 'El campo :attribute es obligatorio.',
+            'fuente.required' => 'La fuente del pedido es obligatoria.',
+            'producto.required' => 'Debes especificar el producto.',
+            'direccion.required' => 'La dirección de entrega es obligatoria.',
+            'codigo_postal.required' => 'El código postal es obligatorio.',
+            'destinatario.required' => 'Debes indicar el nombre del destinatario.',
+            'telf_destinatario.required' => 'El teléfono del destinatario es obligatorio.',
+            'cliente.required' => 'El nombre del cliente es obligatorio.',
+            'telf_cliente.required' => 'El teléfono del cliente es obligatorio.',
+            'fecha_entrega.required' => 'La fecha de entrega es obligatoria.',
+            'fecha_entrega.date' => 'La fecha de entrega no tiene un formato válido.',
+            'precio.required' => 'El precio es obligatorio.',
+            'precio.numeric' => 'El precio debe ser un número válido.',
+            'horario.in' => 'El horario debe ser MAÑANA, TARDE o INDIFERENTE.',
         ];
+    }
+
+    protected function failedValidation(Validator $validator)
+    {
+        throw new HttpResponseException(response()->json([
+            'success' => false,
+            'message' => 'Errores de validación en el formulario.',
+            'errors'  => $validator->errors()
+        ], 422));
     }
 }

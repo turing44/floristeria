@@ -14,21 +14,20 @@ class UpdateEntregaRequest extends FormRequest
     public function rules(): array
     {
         return [
-            // ⚠️ IMPORTANTE: Aquí validamos los nombres del FRONTEND (JSON)
-            // No pongas los nombres de la BD (destinatario_nombre) o fallará.
-            
-            'destinatario'      => 'nullable|string|max:255', // Roberto manda 'destinatario'
-            'telf_destinatario' => 'nullable|string|max:20',
-            'mensaje'           => 'nullable|string',
-            
+            'fuente'            => 'nullable|string',
+            'producto'          => 'nullable|string',
             'direccion'         => 'nullable|string|max:255',
             'codigo_postal'     => 'nullable|string|max:10',
+            'destinatario'      => 'nullable|string|max:255',
+            'telf_destinatario' => 'nullable|string|max:20',
+            'cliente'           => 'nullable|string|max:255',
+            'telf_cliente'      => 'nullable|string|max:20',
             'fecha_entrega'     => 'nullable|date',
+            'precio'            => 'nullable|numeric|min:0',
+            'observaciones'     => 'nullable|string',
             'horario'           => 'nullable|in:MAÑANA,TARDE,INDIFERENTE',
-            'fuente'            => 'nullable|string',
-            
-            // Si quieres permitir editar el estado del pedido padre desde aquí:
-            'estado'            => 'nullable|string',
+            'mensaje'           => 'nullable|string',
+            'estado'            => 'nullable|string'
         ];
     }
 }

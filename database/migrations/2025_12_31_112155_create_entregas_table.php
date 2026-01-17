@@ -11,21 +11,12 @@ return new class extends Migration
         Schema::create('entregas', function (Blueprint $table) {
             $table->id();
             
-            // VÍNCULO CON EL PADRE
             $table->foreignId('pedido_id')->constrained('pedidos')->onDelete('cascade');
             
-            $table->string('fuente'); 
-            
-            // DATOS LOGÍSTICOS EXCLUSIVOS DE ENTREGA
             $table->string('direccion');
             $table->string('codigo_postal');
             $table->string('destinatario_nombre');
             $table->string('destinatario_telf');
-            
-            $table->dateTime('fecha_entrega');
-            $table->enum('horario', ['MAÑANA', 'TARDE', 'INDIFERENTE'])->default('INDIFERENTE');
-
-            $table->string('mensaje_dedicatoria', 500)->nullable(); 
             
             $table->timestamps();
             $table->softDeletes();
