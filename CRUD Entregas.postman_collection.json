@@ -1,0 +1,123 @@
+{
+  "info": {
+    "_postman_id": "a0051c8d-fc5e-4725-b9a5-41af300e12be",
+    "name": "CRUD Entregas",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "49790711",
+    "_collection_link": "https://go.postman.co/collection/49790711-a0051c8d-fc5e-4725-b9a5-41af300e12be?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Create",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"fuente\": \"Glovo\",\r\n    \"producto\": \"Ramo de 12 Rosas\",\r\n    \"precio\": 45.50,\r\n    \"fecha_entrega\": \"2025-12-25\",\r\n    \"horario\": \"MAÑANA\",\r\n    \"estado\": \"PENDIENTE\",\r\n    \r\n    \"cliente\": \"Roberto Frontend\",\r\n    \"telf_cliente\": \"600111222\",\r\n    \r\n    \"destinatario\": \"María Destinatario\",\r\n    \"telf_destinatario\": \"600333444\",\r\n    \"direccion\": \"Calle de la Prueba 123\",\r\n    \"codigo_postal\": \"41001\",\r\n    \r\n    \"mensaje\": \"Felicidades por aprobar el backend!\",\r\n    \"observaciones\": \"Llamar antes de entrar.\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://127.0.0.1:8000/api/entregas",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8000",
+          "path": [
+            "api",
+            "entregas"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Read",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://127.0.0.1:8000/api/entregas",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8000",
+          "path": [
+            "api",
+            "entregas"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Update",
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"precio\": 99.99,\r\n    \"destinatario\": \"María CORREGIDO\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://127.0.0.1:8000/api/entregas/2",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8000",
+          "path": [
+            "api",
+            "entregas",
+            "2"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Delete",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "http://127.0.0.1:8000/api/entregas/2",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8000",
+          "path": [
+            "api",
+            "entregas",
+            "2"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}
