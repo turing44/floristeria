@@ -1,12 +1,12 @@
 {
-    "cliente": "Robe",
-    "telf_cliente": "943022",
+    "cliente_nombre": "Robe",
+    "cliente_telf": "943022",
     "producto": "rosas",
     "fecha_recogida": "12/02/2020",
-    "precio_total": "22.30",
-    "dinero_dejado_a_cuenta": "10.00", 
-    "nombre_tarjeta": "Juan Vazquez", 
-    "mensaje": "Juan te amo", 
+    "precio": "22.30",
+    "nombre_mensaje": "Juan Vazquez", 
+    "texto_mensaje": "Juan te amo", 
     "horario": "MAÑANA",
-    "estado_pago": "PAGADO"
+    "estado_pago": "PAGADO",
+    "dinero_dejado_a_cuenta": "10.00" 
 }

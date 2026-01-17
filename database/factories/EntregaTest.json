@@ -3,14 +3,13 @@
     "producto": "Ramo de rosas rojas",
     "direccion": "Calle de las Flores 123, Madrid",
     "codigo_postal": "28001",
-    "destinatario": "Ana López",
-    "telf_destinatario": "+34 612 345 678",
-    "cliente": "Carlos Pérez",
-    "telf_cliente": "+34 698 765 432",
-    "fecha_entrega": "2025-11-10",
+    "nombre_mensaje": "Ana López",
+    "destinatario_telf": "+34 612 345 678",
+    "cliente_nombre": "Carlos Pérez",
+    "cliente_telf": "+34 698 765 432",
+    "fecha": "2025-11-10",
     "precio": 49.99,
     "observaciones": "Entregar antes de las 12:00. Llamar al llegar.", 
     "horario": "MAÑANA", 
-    "mensaje": "Feliz cumpleaños, te mereces todas las flores del mundo.",
-    "estado": "PENDIENTE" 
+    "mensaje": "Feliz cumpleaños, te mereces todas las flores del mundo." 
 }
