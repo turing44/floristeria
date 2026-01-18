@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Pedido;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -16,24 +17,18 @@ class EntregaFactory extends Factory
      */
     public function definition(): array
     {
-        $horarios = ['MAÑANA', 'TARDE', 'INDIFERENTE'];
-        $estados = ['ARCHIVADO', 'PENDIENTE', 'ACTIVO'];
-
+        
         return [
-            'fuente' => $this->faker->company(),
-            'producto' => $this->faker->word(),
-            'direccion' => $this->faker->streetAddress(),
-            'codigo_postal' => $this->faker->postcode(),
-            'destinatario' => $this->faker->name(),
-            'telf_destinatario' => $this->faker->phoneNumber(),
-            'cliente' => $this->faker->name(),
-            'telf_cliente' => $this->faker->phoneNumber(),
-            'fecha_entrega' => $this->faker->dateTimeBetween('now', '+1 month'),
-            'precio' => $this->faker->randomFloat(2, 10, 500), // Precio entre 10 y 500 €
-            'observaciones' => $this->faker->optional()->sentence(),
-            'horario' => $this->faker->randomElement($horarios),
-            'mensaje' => $this->faker->optional()->sentence(),
-            'estado' => $this->faker->randomElement($estados),
+            "direccion" => $this->faker->streetAddress(),
+            'codigo_postal'     => $this->faker->randomElement([
+                '41001','41002','41003','41004','41005','41006','41007','41008','41009','41010','41011','41012','41013', '41014', '41015'
+            ]),
+            'destinatario_telf' => $this->faker->numerify("6########"),
+            'pedido_id' => Pedido::factory(),
+
         ];
+        
+
+        
     }
 }

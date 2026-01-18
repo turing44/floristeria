@@ -16,7 +16,6 @@ class Entrega extends Model
         'pedido_id',
         'direccion',
         'codigo_postal',
-        'destinatario_nombre', 
         'destinatario_telf', 
     ];
 

@@ -15,7 +15,6 @@ return new class extends Migration
             
             $table->string('direccion');
             $table->string('codigo_postal');
-            $table->string('destinatario_nombre');
             $table->string('destinatario_telf');
             
             $table->timestamps();

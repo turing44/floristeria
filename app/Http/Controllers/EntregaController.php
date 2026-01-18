@@ -62,8 +62,8 @@ class EntregaController extends Controller
             return DB::transaction(function () use ($datos) {
                 
                 $pedido = Pedido::create([
-                    'cliente_nombre' => $datos['cliente'],      
-                    'cliente_telf'   => $datos['telf_cliente'],   
+                    'cliente_nombre' => $datos['cliente_nombre'],      
+                    'cliente_telf'   => $datos['cliente_telf'],   
                     'precio'         => $datos['precio'],
                     'producto'       => $datos['producto'],      
                     'estado'         => $datos['estado'] ?? 'PENDIENTE',
@@ -71,10 +71,10 @@ class EntregaController extends Controller
                     'tipo_pedido'    => 'DOMICILIO',
                     
                     'fuente'         => $datos['fuente'] ?? null,
-                    'fecha'          => $datos['fecha_entrega'], 
+                    'fecha'          => $datos['fecha'], 
                     'horario'        => $datos['horario'] ?? 'INDIFERENTE',
-                    'texto_mensaje'  => $datos['mensaje'] ?? null, 
-                    'nombre_mensaje' => null, 
+                    'texto_mensaje'  => $datos['texto_mensaje'] ?? null, 
+                    'nombre_mensaje' => $datos['nombre_mensaje'] ?? null, 
                     
                     'user_id'        => null, 
                     'guest_token_id' => null, 
@@ -82,9 +82,8 @@ class EntregaController extends Controller
 
                 $entrega = $pedido->entrega()->create([
                     'direccion'           => $datos['direccion'],
-                    'codigo_postal'       => $datos['codigo_postal'],
-                    'destinatario_nombre' => $datos['destinatario'],      
-                    'destinatario_telf'   => $datos['telf_destinatario'], 
+                    'codigo_postal'       => $datos['codigo_postal'],      
+                    'destinatario_telf'   => $datos['destinatario_telf'], 
                 ]);
 
                 return response()->json($entrega->load('pedido'), 201);
@@ -108,28 +107,28 @@ class EntregaController extends Controller
     public function update(UpdateEntregaRequest $request, Entrega $entrega)
     {
         $datos = $request->validated();
-        
+
         $datosEntrega = [];
-        if (isset($datos['destinatario']))      $datosEntrega['destinatario_nombre'] = $datos['destinatario'];
-        if (isset($datos['telf_destinatario'])) $datosEntrega['destinatario_telf'] = $datos['telf_destinatario'];
-        if (isset($datos['direccion']))         $datosEntrega['direccion'] = $datos['direccion'];
-        if (isset($datos['codigo_postal']))     $datosEntrega['codigo_postal'] = $datos['codigo_postal'];
-        
+        if (isset($datos['direccion']))       $datosEntrega['direccion'] = $datos['direccion'];
+        if (isset($datos['codigo_postal']))   $datosEntrega['codigo_postal'] = $datos['codigo_postal'];
+        if (isset($datos['destinatario_telf'])) $datosEntrega['destinatario_telf'] = $datos['destinatario_telf'];
+
         if (!empty($datosEntrega)) {
             $entrega->update($datosEntrega);
         }
 
         $datosPedido = [];
-        if (isset($datos['cliente']))       $datosPedido['cliente_nombre'] = $datos['cliente'];
-        if (isset($datos['telf_cliente']))  $datosPedido['cliente_telf'] = $datos['telf_cliente'];
-        if (isset($datos['precio']))        $datosPedido['precio'] = $datos['precio'];
-        if (isset($datos['producto']))      $datosPedido['producto'] = $datos['producto'];
-        if (isset($datos['estado']))        $datosPedido['estado'] = $datos['estado'];
-        if (isset($datos['observaciones'])) $datosPedido['observaciones'] = $datos['observaciones'];
-        if (isset($datos['fuente']))        $datosPedido['fuente'] = $datos['fuente'];
-        if (isset($datos['fecha_entrega'])) $datosPedido['fecha'] = $datos['fecha_entrega'];
-        if (isset($datos['horario']))       $datosPedido['horario'] = $datos['horario'];
-        if (isset($datos['mensaje']))       $datosPedido['texto_mensaje'] = $datos['mensaje'];
+        if (isset($datos['cliente_nombre'])) $datosPedido['cliente_nombre'] = $datos['cliente_nombre'];
+        if (isset($datos['cliente_telf']))   $datosPedido['cliente_telf']   = $datos['cliente_telf'];
+        if (isset($datos['precio']))         $datosPedido['precio']         = $datos['precio'];
+        if (isset($datos['producto']))       $datosPedido['producto']       = $datos['producto'];
+        if (isset($datos['estado']))         $datosPedido['estado']          = $datos['estado'];
+        if (isset($datos['observaciones']))  $datosPedido['observaciones']   = $datos['observaciones'];
+        if (isset($datos['fuente']))         $datosPedido['fuente']          = $datos['fuente'];
+        if (isset($datos['fecha']))          $datosPedido['fecha']           = $datos['fecha'];
+        if (isset($datos['horario']))        $datosPedido['horario']         = $datos['horario'];
+        if (isset($datos['texto_mensaje']))  $datosPedido['texto_mensaje']   = $datos['texto_mensaje'];
+        if (isset($datos['nombre_mensaje'])) $datosPedido['nombre_mensaje']  = $datos['nombre_mensaje'];
 
         if (!empty($datosPedido)) {
             $entrega->pedido->update($datosPedido);

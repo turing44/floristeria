@@ -20,15 +20,15 @@ class StoreEntregaRequest extends FormRequest
             'producto'          => 'required|string',
             'direccion'         => 'required|string|max:255',
             'codigo_postal'     => 'required|string|max:10',
-            'destinatario'      => 'required|string|max:255',
-            'telf_destinatario' => 'required|string|max:20',
-            'cliente'           => 'required|string|max:255',
-            'telf_cliente'      => 'required|string|max:20',
-            'fecha_entrega'     => 'required|date',
+            'nombre_mensaje'      => 'required|string|max:255',
+            'destinatario_telf' => 'required|string|max:20',
+            'cliente_nombre'           => 'required|string|max:255',
+            'cliente_telf'      => 'required|string|max:20',
+            'fecha'     => 'required|date',
             'precio'            => 'required|numeric|min:0',
             'observaciones'     => 'nullable|string',
             'horario'           => 'nullable|in:MAÑANA,TARDE,INDIFERENTE',
-            'mensaje'           => 'nullable|string',
+            'texto_mensaje'     => 'nullable|string',
             'estado'            => 'nullable|string'
         ];
     }
@@ -36,21 +36,52 @@ class StoreEntregaRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'fuente.required' => 'La fuente del pedido es obligatoria.',
-            'producto.required' => 'Debes especificar el producto.',
-            'direccion.required' => 'La dirección de entrega es obligatoria.',
-            'codigo_postal.required' => 'El código postal es obligatorio.',
-            'destinatario.required' => 'Debes indicar el nombre del destinatario.',
-            'telf_destinatario.required' => 'El teléfono del destinatario es obligatorio.',
-            'cliente.required' => 'El nombre del cliente es obligatorio.',
-            'telf_cliente.required' => 'El teléfono del cliente es obligatorio.',
-            'fecha_entrega.required' => 'La fecha de entrega es obligatoria.',
-            'fecha_entrega.date' => 'La fecha de entrega no tiene un formato válido.',
-            'precio.required' => 'El precio es obligatorio.',
-            'precio.numeric' => 'El precio debe ser un número válido.',
-            'horario.in' => 'El horario debe ser MAÑANA, TARDE o INDIFERENTE.',
+            'fuente.string'              => 'La fuente debe ser un texto válido.',
+
+            'producto.required'          => 'Debe indicar el producto.',
+            'producto.string'            => 'El producto debe ser un texto válido.',
+
+            'direccion.required'         => 'Debe indicar la dirección de entrega.',
+            'direccion.string'           => 'La dirección debe ser un texto válido.',
+            'direccion.max'              => 'La dirección no puede superar los 255 caracteres.',
+
+            'codigo_postal.required'     => 'Debe indicar el código postal.',
+            'codigo_postal.string'       => 'El código postal debe ser un texto válido.',
+            'codigo_postal.max'          => 'El código postal no puede superar los 10 caracteres.',
+
+            'nombre_mensaje.required'    => 'Debe indicar el nombre que aparecerá en la tarjeta.',
+            'nombre_mensaje.string'      => 'El nombre de la tarjeta debe ser un texto válido.',
+            'nombre_mensaje.max'         => 'El nombre de la tarjeta no puede superar los 255 caracteres.',
+
+            'destinatario_telf.required' => 'Debe indicar el teléfono del destinatario.',
+            'destinatario_telf.string'   => 'El teléfono del destinatario debe ser un texto válido.',
+            'destinatario_telf.max'      => 'El teléfono del destinatario no puede superar los 20 caracteres.',
+
+            'cliente_nombre.required'    => 'Debe indicar el nombre del cliente.',
+            'cliente_nombre.string'      => 'El nombre del cliente debe ser un texto válido.',
+            'cliente_nombre.max'         => 'El nombre del cliente no puede superar los 255 caracteres.',
+
+            'cliente_telf.required'      => 'Debe indicar el teléfono del cliente.',
+            'cliente_telf.string'        => 'El teléfono del cliente debe ser un texto válido.',
+            'cliente_telf.max'           => 'El teléfono del cliente no puede superar los 20 caracteres.',
+
+            'fecha.required'             => 'Debe indicar la fecha de entrega.',
+            'fecha.date'                 => 'La fecha de entrega no es válida.',
+
+            'precio.required'            => 'Debe indicar el precio.',
+            'precio.numeric'             => 'El precio debe ser un número válido.',
+            'precio.min'                 => 'El precio no puede ser negativo.',
+
+            'observaciones.string'       => 'Las observaciones deben ser un texto válido.',
+
+            'horario.in'                 => 'El horario debe ser MAÑANA, TARDE o INDIFERENTE.',
+
+            'texto_mensaje.string'       => 'El texto de la tarjeta debe ser un texto válido.',
+
+            'estado.string'              => 'El estado debe ser un texto válido.',
         ];
     }
+
 
     protected function failedValidation(Validator $validator)
     {
