@@ -29,7 +29,6 @@ class StoreEntregaRequest extends FormRequest
             'observaciones'     => 'nullable|string',
             'horario'           => 'nullable|in:MAÑANA,TARDE,INDIFERENTE',
             'texto_mensaje'     => 'nullable|string',
-            'estado'            => 'nullable|string'
         ];
     }
 

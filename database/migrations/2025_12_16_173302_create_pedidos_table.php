@@ -24,7 +24,6 @@ return new class extends Migration
         $table->string('cliente_telf'); 
         
         $table->enum('horario', ['MAÑANA', 'TARDE','INDIFERENTE'])->default('INDIFERENTE');
-        $table->string('estado')->default('PENDIENTE'); 
         
         $table->text('observaciones')->nullable(); 
 

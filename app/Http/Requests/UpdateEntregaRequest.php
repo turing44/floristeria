@@ -29,7 +29,6 @@ class UpdateEntregaRequest extends FormRequest
             'horario'           => 'nullable|in:MAÑANA,TARDE,INDIFERENTE',
             'texto_mensaje'     => 'nullable|string',
             'nombre_mensaje'    => 'nullable|string|max:255',
-            'estado'            => 'nullable|string',
         ];
     }
 
@@ -69,7 +68,6 @@ class UpdateEntregaRequest extends FormRequest
             'nombre_mensaje.string'      => 'El nombre de la tarjeta debe ser un texto válido.',
             'nombre_mensaje.max'         => 'El nombre de la tarjeta no puede superar los 255 caracteres.',
 
-            'estado.string'              => 'El estado debe ser un texto válido.',
         ];
     }
 

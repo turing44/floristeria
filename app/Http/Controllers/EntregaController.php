@@ -66,7 +66,6 @@ class EntregaController extends Controller
                     'cliente_telf'   => $datos['cliente_telf'],   
                     'precio'         => $datos['precio'],
                     'producto'       => $datos['producto'],      
-                    'estado'         => $datos['estado'] ?? 'PENDIENTE',
                     'observaciones'  => $datos['observaciones'] ?? null,
                     'tipo_pedido'    => 'DOMICILIO',
                     
@@ -122,7 +121,6 @@ class EntregaController extends Controller
         if (isset($datos['cliente_telf']))   $datosPedido['cliente_telf']   = $datos['cliente_telf'];
         if (isset($datos['precio']))         $datosPedido['precio']         = $datos['precio'];
         if (isset($datos['producto']))       $datosPedido['producto']       = $datos['producto'];
-        if (isset($datos['estado']))         $datosPedido['estado']          = $datos['estado'];
         if (isset($datos['observaciones']))  $datosPedido['observaciones']   = $datos['observaciones'];
         if (isset($datos['fuente']))         $datosPedido['fuente']          = $datos['fuente'];
         if (isset($datos['fecha']))          $datosPedido['fecha']           = $datos['fecha'];

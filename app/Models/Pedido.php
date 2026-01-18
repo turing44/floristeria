@@ -21,7 +21,6 @@ class Pedido extends Model
         'cliente_nombre',
         'cliente_telf',
         'horario',
-        'estado',
         'observaciones',
         'nombre_mensaje',
         'texto_mensaje'
