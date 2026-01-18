@@ -186,11 +186,17 @@ class EntregaController extends Controller
 
     public function obtenerEliminadas()
     {
-        return Entrega::onlyTrashed()->with('pedido')->get();
+        return Entrega::onlyTrashed()
+            ->with(['pedido' => fn ($pedido) => $pedido->withTrashed()])
+            ->get();
     }
 
     public function obtenerEntregaEliminada($id)
     {
-        return Entrega::onlyTrashed()->with('pedido')->where("id", $id)->get();
+        return Entrega::onlyTrashed()
+            ->with(['pedido' => fn ($pedido) => $pedido->withTrashed()])
+            ->where('id', $id)
+            ->firstOrFail();
     }
+
 }
