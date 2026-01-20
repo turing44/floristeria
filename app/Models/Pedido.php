@@ -23,7 +23,7 @@ class Pedido extends Model
         'horario',
         'observaciones',
         'nombre_mensaje',
-        'texto_mensaje'
+        'texto_mensaje',
     ];
 
     public function user()
