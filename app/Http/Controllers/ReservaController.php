@@ -41,6 +41,7 @@ class ReservaController extends Controller
 
         return response()->json([
             "num_reservas" => $query->count(),
+            "num_archivadas" => Reserva::onlyTrashed()->count(),
             "reservas" => $query->get()
         ]);
     }
@@ -175,9 +176,14 @@ class ReservaController extends Controller
 
     public function obtenerEliminadas()
     {
-        return Reserva::onlyTrashed()
+        $archivadas = Reserva::onlyTrashed()
             ->with(['pedido' => fn ($pedido) => $pedido->withTrashed()])
+            ->orderBy('deleted_at', 'desc') 
             ->get();
+        return response()->json([
+            "num_archivadas" => $archivadas->count(),
+            "entregas"       => $archivadas
+        ]);
     }
 
     public function obtenerReservaEliminada($id)

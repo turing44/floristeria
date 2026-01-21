@@ -43,6 +43,7 @@ class EntregaController extends Controller
 
         return response()->json([
             "num_entregas" => $query->count(),
+            "num_archivadas" => Entrega::onlyTrashed()->count(),
             "entregas" => $query->get()
         ]);
     }
@@ -178,9 +179,15 @@ class EntregaController extends Controller
 
     public function obtenerEliminadas()
     {
-        return Entrega::onlyTrashed()
+        $archivadas = Entrega::onlyTrashed()
             ->with(['pedido' => fn ($pedido) => $pedido->withTrashed()])
+            ->orderBy('deleted_at', 'desc')
             ->get();
+
+        return response()->json([
+            "num_archivadas" => $archivadas->count(),
+            "entregas"       => $archivadas
+        ]);
     }
 
     public function obtenerEntregaEliminada($id)
