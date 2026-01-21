@@ -208,7 +208,7 @@
             
             <div class="bloqueContacto">
                 <p>Destinatario:</p>
-                <p id="colorAzul">{{ $pedido->entrega->destinatario_nombre ?? 'Recogida Tienda' }}</p>
+                <p id="colorAzul">{{ $pedido->nombre_mensaje ?? 'Recogida Tienda' }}</p>
                 
                 <p>Teléfono Destinatario:</p>
                 <p id="colorAzul">{{ $pedido->entrega->destinatario_telf ?? '-' }}</p>
@@ -269,7 +269,7 @@
             
             <div class="bloqueContacto">
                 <p>Destinatario:</p>
-                <p id="colorAzul">{{ $pedido->entrega->destinatario_nombre ?? 'Recogida Tienda' }}</p>
+                <p id="colorAzul">{{ $pedido->nombre_mensaje ?? 'Recogida Tienda' }}</p>
                 
                 <p>Teléfono Destinatario:</p>
                 <p id="colorAzul">{{ $pedido->entrega->destinatario_telf ?? '-' }}</p>
@@ -336,7 +336,7 @@
             </div>
             <div class="divVacio"></div>
             <div class="nombreDestinatario">
-               <p>{{ $pedido->entrega->destinatario_nombre ?? $pedido->cliente_nombre }}</p> 
+               <p>{{ $pedido->nombre_mensaje ?? $pedido->cliente_nombre }}</p> 
             </div>
         </div>
     </div>

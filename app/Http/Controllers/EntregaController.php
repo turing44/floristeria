@@ -17,17 +17,10 @@ class EntregaController extends Controller
     {
         $query = Entrega::with('pedido');
 
-        if ($request->has('estado')) {
-            $estado = $request->input('estado');
-            $query->whereHas('pedido', function($q) use ($estado) {
-                $q->where('estado', $estado);
-            });
-        }
-
-        if ($request->has('ordenar')) {
-            switch ($request->input('ordenar')) {
+        if ($request->has('sort')) {
+            switch ($request->input('sort')) {
                 case 'cp':
-                    $query->orderBy('codigo_postal', 'asc');
+                    $query->orderBy('codigo_postal', 'desc');
                     break;
                 case 'fecha_asc':
                     $query->join('pedidos', 'entregas.pedido_id', '=', 'pedidos.id')
@@ -43,6 +36,7 @@ class EntregaController extends Controller
                     $query->latest();
                     break;
             }
+
         } else {
             $query->latest();
         }

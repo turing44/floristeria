@@ -15,7 +15,7 @@ class Reserva extends Model
     protected $fillable = [
         'pedido_id',
         'dinero_a_cuenta',
-        'estado_pago'
+        'estado_pago',
     ];
 
     public function pedido()

@@ -13,6 +13,6 @@ class EntregaSeeder extends Seeder
      */
     public function run(): void
     {
-        Entrega::factory()->count(3)->create();
+        Entrega::factory()->count(5)->create();
     }
 }

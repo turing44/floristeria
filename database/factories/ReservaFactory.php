@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Pedido;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -16,21 +17,11 @@ class ReservaFactory extends Factory
      */
     public function definition(): array
     {
-        $horarios = ['MAÑANA', 'TARDE', 'INDIFERENTE'];
-        $estados = ['ARCHIVADO', 'PENDIENTE', 'ACTIVO'];
 
         return [
-            'cliente' => $this->faker->name(),
-            'producto' => $this->faker->word(),
-            'telf_cliente' => $this->faker->phoneNumber(),
-            'precio' => $this->faker->randomFloat(2, 10, 300),
-            'dinero_a_cuenta' => $this->faker->randomFloat(2, 0, 150),
-            'fecha_recogida' => $this->faker->dateTimeBetween('now', '+1 month'),
-            'observaciones' => $this->faker->optional()->sentence(),
-            'horario' => $this->faker->randomElement($horarios),
-            'nombre_mensaje' => $this->faker->name(),
-            'texto_mensaje' => $this->faker->optional()->sentence(),
-            'estado' => $this->faker->randomElement($estados),
+            'dinero_a_cuenta' => $this->faker->numberBetween(0,70),
+            'estado_pago' => $this->faker->randomElement(['PEDIENTE', 'PAGADO']),
+            'pedido_id' => Pedido::factory(),
         ];
     }
 }
