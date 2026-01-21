@@ -20,7 +20,7 @@ Route::get('/user', function (Request $request) {
 // 1. ÁREA DE LOGÍSTICA DE ENTREGAS 🚚
 // ========================================================================
 Route::get("/entregas/archivadas", [EntregaController::class, "obtenerEliminadas"]);
-Route::get("/entregas/{id}/archivadas", [EntregaController::class, "obtenerEntregaEliminada"]);
+Route::get("/entregas/archivadas/{id}", [EntregaController::class, "obtenerEntregaEliminada"]);
 
 // El nuevo endpoint para el PDF
 Route::get('/entregas/{entrega}/pdf', [EntregaController::class, 'generarPdf']);
