@@ -3,49 +3,36 @@
 namespace App\Http\Controllers;
 
 use App\Models\Reserva;
-use App\Models\Pedido;
+use App\Services\PedidoService;
 use App\Http\Requests\StoreReservaRequest;
 use App\Http\Requests\UpdateReservaRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class ReservaController extends Controller
 {
+    protected $pedidoService;
+
+    public function __construct(PedidoService $pedidoService)
+    {
+        $this->pedidoService = $pedidoService;
+    }
 
     public function index(Request $request)
     {
-        $query = Reserva::with('pedido');
+        $query = Reserva::with('pedido')
+            ->join('pedidos', 'reservas.pedido_id', '=', 'pedidos.id')
+            ->select('reservas.*');
 
-        if ($request->has('sort')) {
-            switch ($request->input('sort')) {
-                // El filtro 'cp' no tiene sentido en reservas (se recogen en tienda), lo quitamos.
-                case 'fecha_asc':
-                    $query->join('pedidos', 'reservas.pedido_id', '=', 'pedidos.id')
-                          ->orderBy('pedidos.fecha', 'asc')
-                          ->select('reservas.*'); 
-                    break;
-                case 'fecha_desc':
-                    $query->join('pedidos', 'reservas.pedido_id', '=', 'pedidos.id')
-                          ->orderBy('pedidos.fecha', 'desc')
-                          ->select('reservas.*');
-                    break;
-                default:
-                    $query->latest();
-                    break;
-            }
-
-        } else {
-            $query->latest();
-        }
+        $orden = $request->input('orden', 'asc');
+        $query->orderBy('pedidos.fecha', $orden);
 
         return response()->json([
-            "num_reservas" => $query->count(),
+            "num_reservas"   => $query->count(),
             "num_archivadas" => Reserva::onlyTrashed()->count(),
-            "reservas" => $query->get()
+            "reservas"       => $query->get()
         ]);
     }
-
 
     public function store(StoreReservaRequest $request)
     {
@@ -53,26 +40,7 @@ class ReservaController extends Controller
 
         try {
             return DB::transaction(function () use ($datos) {
-                
-                // 1. Crear PADRE (Pedido)
-                $pedido = Pedido::create([
-                    'cliente_nombre' => $datos['cliente_nombre'],      
-                    'cliente_telf'   => $datos['cliente_telf'],   
-                    'precio'         => $datos['precio'],
-                    'producto'       => $datos['producto'],      
-                    'observaciones'  => $datos['observaciones'] ?? null,
-                    'tipo_pedido'    => 'TIENDA', 
-                    
-                    'fuente'         => $datos['fuente'] ?? 'Tienda',
-                    'fecha'          => $datos['fecha'], 
-                    'horario'        => $datos['horario'] ?? 'INDIFERENTE',
-                    'texto_mensaje'  => $datos['texto_mensaje'] ?? null, 
-                    'nombre_mensaje' => $datos['nombre_mensaje'] ?? null, 
-                    
-                    'user_id'        => null, 
-                    'guest_token_id' => null, 
-                ]);
-
+                $pedido = $this->pedidoService->crearPedidoBase($datos, 'TIENDA');
                 $reserva = $pedido->reserva()->create([
                     'dinero_dejado_a_cuenta' => $datos['dinero_dejado_a_cuenta'] ?? 0,
                     'estado_pago'            => $datos['estado_pago'] ?? 'PENDIENTE',
@@ -80,61 +48,46 @@ class ReservaController extends Controller
 
                 return response()->json($reserva->load('pedido'), 201);
             });
-
         } catch (\Exception $e) {
-            return response()->json([
-                'ERROR' => 'Error creando la reserva',
-                'DETALLE' => $e->getMessage(),
-            ], 500);
+            return response()->json(['error' => $e->getMessage()], 500);
         }
     }
 
-
-    public function show(Reserva $reserva)
+    public function show($id)
     {
-        return $reserva->load('pedido');
+        return Reserva::with('pedido')->findOrFail($id);
     }
 
-
-    public function update(UpdateReservaRequest $request, Reserva $reserva)
+    public function update(UpdateReservaRequest $request, $id)
     {
+        $reserva = Reserva::with('pedido')->findOrFail($id);
         $datos = $request->validated();
 
-        $datosReserva = [];
-        if (isset($datos['dinero_dejado_a_cuenta'])) $datosReserva['dinero_dejado_a_cuenta'] = $datos['dinero_dejado_a_cuenta'];
-        if (isset($datos['estado_pago']))            $datosReserva['estado_pago'] = $datos['estado_pago'];
+        try {
+            return DB::transaction(function () use ($reserva, $datos) {
+                $this->pedidoService->actualizarPedidoBase($reserva->pedido, $datos);
+                $reserva->update($datos);
 
-        if (!empty($datosReserva)) {
-            $reserva->update($datosReserva);
+                return response()->json($reserva->load('pedido'), 200);
+            });
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
         }
-
-        $datosPedido = [];
-        if (isset($datos['cliente_nombre'])) $datosPedido['cliente_nombre'] = $datos['cliente_nombre'];
-        if (isset($datos['cliente_telf']))   $datosPedido['cliente_telf']   = $datos['cliente_telf'];
-        if (isset($datos['precio']))         $datosPedido['precio']         = $datos['precio'];
-        if (isset($datos['producto']))       $datosPedido['producto']       = $datos['producto'];
-        if (isset($datos['observaciones']))  $datosPedido['observaciones']  = $datos['observaciones'];
-        if (isset($datos['fuente']))         $datosPedido['fuente']         = $datos['fuente'];
-        if (isset($datos['fecha']))          $datosPedido['fecha']          = $datos['fecha'];
-        if (isset($datos['horario']))        $datosPedido['horario']        = $datos['horario'];
-        if (isset($datos['texto_mensaje']))  $datosPedido['texto_mensaje']  = $datos['texto_mensaje'];
-        if (isset($datos['nombre_mensaje'])) $datosPedido['nombre_mensaje'] = $datos['nombre_mensaje'];
-
-        if (!empty($datosPedido)) {
-            $reserva->pedido->update($datosPedido);
-        }
-
-        return $reserva->load('pedido');
     }
 
-    public function destroy(Reserva $reserva)
+    public function destroy($id)
     {
-        $reserva->pedido->delete(); 
-        $reserva->delete(); 
-        return response()->json(["message" => "Reserva archivada correctamente"], 204);
+        try {
+            return DB::transaction(function () use ($id) {
+                $reserva = Reserva::findOrFail($id);
+                $reserva->pedido()->delete();
+                $reserva->delete();
+                return response()->json(null, 204);
+            });
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 404);
+        }
     }
-
-
     public function generarPdf(Reserva $reserva)
     {
         $reserva->load('pedido'); 
@@ -174,24 +127,26 @@ class ReservaController extends Controller
         return response('Error iniciando Node.js', 500);
     }
 
+
+
     public function obtenerEliminadas()
     {
         $archivadas = Reserva::onlyTrashed()
-            ->with(['pedido' => fn ($pedido) => $pedido->withTrashed()])
-            ->orderBy('deleted_at', 'desc') 
+            ->with(['pedido' => fn ($p) => $p->withTrashed()])
+            ->orderBy('deleted_at', 'desc')
             ->get();
+
         return response()->json([
             "num_archivadas" => $archivadas->count(),
-            "entregas"       => $archivadas
+            "reservas"       => $archivadas
         ]);
     }
 
     public function obtenerReservaEliminada($id)
     {
         return Reserva::onlyTrashed()
-            ->with(['pedido' => fn ($pedido) => $pedido->withTrashed()])
+            ->with(['pedido' => fn ($p) => $p->withTrashed()])
             ->where('id', $id)
             ->firstOrFail();
     }
-
 }

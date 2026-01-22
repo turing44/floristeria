@@ -3,51 +3,39 @@
 namespace App\Http\Controllers;
 
 use App\Models\Entrega;
-use App\Models\Pedido;
+use App\Services\PedidoService;
 use App\Http\Requests\StoreEntregaRequest;
 use App\Http\Requests\UpdateEntregaRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class EntregaController extends Controller
 {
+    protected $pedidoService;
+
+    public function __construct(PedidoService $pedidoService)
+    {
+        $this->pedidoService = $pedidoService;
+    }
 
     public function index(Request $request)
     {
-        $query = Entrega::with('pedido');
+        $query = Entrega::with('pedido')
+            ->join('pedidos', 'entregas.pedido_id', '=', 'pedidos.id')
+            ->select('entregas.*');
 
-        if ($request->has('sort')) {
-            switch ($request->input('sort')) {
-                case 'cp':
-                    $query->orderBy('codigo_postal', 'desc');
-                    break;
-                case 'fecha_asc':
-                    $query->join('pedidos', 'entregas.pedido_id', '=', 'pedidos.id')
-                          ->orderBy('pedidos.fecha', 'asc')
-                          ->select('entregas.*'); 
-                    break;
-                case 'fecha_desc':
-                    $query->join('pedidos', 'entregas.pedido_id', '=', 'pedidos.id')
-                          ->orderBy('pedidos.fecha', 'desc')
-                          ->select('entregas.*');
-                    break;
-                default:
-                    $query->latest();
-                    break;
-            }
-
-        } else {
-            $query->latest();
+        if ($request->filled('codigo_postal')) {
+            $query->where('codigo_postal', $request->codigo_postal);
         }
+        $orden = $request->input('orden', 'asc');
+        $query->orderBy('pedidos.fecha', $orden);
 
         return response()->json([
-            "num_entregas" => $query->count(),
+            "num_entregas"   => $query->count(),
             "num_archivadas" => Entrega::onlyTrashed()->count(),
-            "entregas" => $query->get()
+            "entregas"       => $query->get()
         ]);
     }
-
 
     public function store(StoreEntregaRequest $request)
     {
@@ -55,89 +43,57 @@ class EntregaController extends Controller
 
         try {
             return DB::transaction(function () use ($datos) {
-                
-                $pedido = Pedido::create([
-                    'cliente_nombre' => $datos['cliente_nombre'],      
-                    'cliente_telf'   => $datos['cliente_telf'],   
-                    'precio'         => $datos['precio'],
-                    'producto'       => $datos['producto'],      
-                    'observaciones'  => $datos['observaciones'] ?? null,
-                    'tipo_pedido'    => 'DOMICILIO',
-                    
-                    'fuente'         => $datos['fuente'] ?? null,
-                    'fecha'          => $datos['fecha'], 
-                    'horario'        => $datos['horario'] ?? 'INDIFERENTE',
-                    'texto_mensaje'  => $datos['texto_mensaje'] ?? null, 
-                    'nombre_mensaje' => $datos['nombre_mensaje'] ?? null, 
-                    
-                    'user_id'        => null, 
-                    'guest_token_id' => null, 
-                ]);
+                $pedido = $this->pedidoService->crearPedidoBase($datos, 'DOMICILIO');
 
                 $entrega = $pedido->entrega()->create([
-                    'direccion'           => $datos['direccion'],
-                    'codigo_postal'       => $datos['codigo_postal'],      
-                    'destinatario_telf'   => $datos['destinatario_telf'], 
+                    'direccion'         => $datos['direccion'],
+                    'codigo_postal'     => $datos['codigo_postal'],
+                    'destinatario_telf' => $datos['destinatario_telf'],
                 ]);
 
                 return response()->json($entrega->load('pedido'), 201);
             });
-
         } catch (\Exception $e) {
-            return response()->json([
-                'ERROR' => 'Error creando la entrega',
-                'DETALLE' => $e->getMessage(),
-            ], 500);
+            return response()->json(['error' => $e->getMessage()], 500);
         }
     }
 
-
-    public function show(Entrega $entrega)
+    public function show($id)
     {
-        return $entrega->load('pedido');
+        return Entrega::with('pedido')->findOrFail($id);
     }
 
-
-    public function update(UpdateEntregaRequest $request, Entrega $entrega)
+    public function update(UpdateEntregaRequest $request, $id)
     {
+        $entrega = Entrega::with('pedido')->findOrFail($id);
         $datos = $request->validated();
 
-        $datosEntrega = [];
-        if (isset($datos['direccion']))       $datosEntrega['direccion'] = $datos['direccion'];
-        if (isset($datos['codigo_postal']))   $datosEntrega['codigo_postal'] = $datos['codigo_postal'];
-        if (isset($datos['destinatario_telf'])) $datosEntrega['destinatario_telf'] = $datos['destinatario_telf'];
+        try {
+            return DB::transaction(function () use ($entrega, $datos) {
+                $this->pedidoService->actualizarPedidoBase($entrega->pedido, $datos);
+                $entrega->update($datos);
 
-        if (!empty($datosEntrega)) {
-            $entrega->update($datosEntrega);
+                return response()->json($entrega->load('pedido'), 200);
+            });
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
         }
-
-        $datosPedido = [];
-        if (isset($datos['cliente_nombre'])) $datosPedido['cliente_nombre'] = $datos['cliente_nombre'];
-        if (isset($datos['cliente_telf']))   $datosPedido['cliente_telf']   = $datos['cliente_telf'];
-        if (isset($datos['precio']))         $datosPedido['precio']         = $datos['precio'];
-        if (isset($datos['producto']))       $datosPedido['producto']       = $datos['producto'];
-        if (isset($datos['observaciones']))  $datosPedido['observaciones']   = $datos['observaciones'];
-        if (isset($datos['fuente']))         $datosPedido['fuente']          = $datos['fuente'];
-        if (isset($datos['fecha']))          $datosPedido['fecha']           = $datos['fecha'];
-        if (isset($datos['horario']))        $datosPedido['horario']         = $datos['horario'];
-        if (isset($datos['texto_mensaje']))  $datosPedido['texto_mensaje']   = $datos['texto_mensaje'];
-        if (isset($datos['nombre_mensaje'])) $datosPedido['nombre_mensaje']  = $datos['nombre_mensaje'];
-
-        if (!empty($datosPedido)) {
-            $entrega->pedido->update($datosPedido);
-        }
-
-        return $entrega->load('pedido');
     }
 
-    public function destroy(Entrega $entrega)
+    public function destroy($id)
     {
-        $entrega->pedido->delete(); 
-        $entrega->delete(); 
-        return response()->json(["message" => "Entrega archivada correctamente"], 204);
+        try {
+            return DB::transaction(function () use ($id) {
+                $entrega = Entrega::findOrFail($id);
+                $entrega->pedido()->delete(); 
+                $entrega->delete();      
+                return response()->json(null, 204);
+            });
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 404);
+        }
     }
-
-
+    
     public function generarPdf(Entrega $entrega)
     {
         $entrega->load('pedido'); 
@@ -177,10 +133,11 @@ class EntregaController extends Controller
         return response('Error iniciando Node.js', 500);
     }
 
+
     public function obtenerEliminadas()
     {
         $archivadas = Entrega::onlyTrashed()
-            ->with(['pedido' => fn ($pedido) => $pedido->withTrashed()])
+            ->with(['pedido' => fn ($p) => $p->withTrashed()])
             ->orderBy('deleted_at', 'desc')
             ->get();
 
@@ -193,9 +150,8 @@ class EntregaController extends Controller
     public function obtenerEntregaEliminada($id)
     {
         return Entrega::onlyTrashed()
-            ->with(['pedido' => fn ($pedido) => $pedido->withTrashed()])
+            ->with(['pedido' => fn ($p) => $p->withTrashed()])
             ->where('id', $id)
             ->firstOrFail();
     }
-
 }
