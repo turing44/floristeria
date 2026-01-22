@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\EntregaController;
 use App\Http\Controllers\ReservaController;
+use App\Http\Controllers\MensajeController;
 
 
 Route::get('/user', function (Request $request) {
@@ -35,3 +36,5 @@ Route::delete("/reservas/{reserva}", [ReservaController::class, "destroy"]);
 Route::get("/reservas/archivadas", [ReservaController::class, "obtenerEliminadas"]);
 Route::get("/reservas/archivadas/{id}", [ReservaController::class, "obtenerReservaEliminada"]);
 Route::get('/reservas/pdf/{reserva}', [ReservaController::class, 'generarPdf']);
+
+Route::post('/mensaje/pdf', [MensajeController::class, 'generarPdf']);
