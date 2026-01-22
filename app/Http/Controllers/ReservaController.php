@@ -17,20 +17,36 @@ class ReservaController extends Controller
     {
         $this->pedidoService = $pedidoService;
     }
-
     public function index(Request $request)
     {
         $query = Reserva::with('pedido')
             ->join('pedidos', 'reservas.pedido_id', '=', 'pedidos.id')
-            ->select('reservas.*');
+            ->select('reservas.*'); 
+        if ($request->filled('telefono')) {
+            $query->where('pedidos.cliente_telf', 'LIKE', '%' . $request->telefono . '%');
+        }
 
-        $orden = $request->input('orden', 'asc');
-        $query->orderBy('pedidos.fecha', $orden);
-
+        if ($request->has('ordenar')) {
+            switch ($request->input('ordenar')) {
+                case 'fecha_asc':
+                    $query->orderBy('pedidos.fecha', 'asc');
+                    break;
+                    
+                case 'fecha_desc':
+                    $query->orderBy('pedidos.fecha', 'desc');
+                    break;
+                    
+                default:
+                    $query->orderBy('pedidos.fecha', 'desc');
+                    break;
+            }
+        } else {
+            $query->orderBy('pedidos.fecha', 'desc');
+        }
         return response()->json([
             "num_reservas"   => $query->count(),
             "num_archivadas" => Reserva::onlyTrashed()->count(),
-            "reservas"       => $query->get()
+            "reservas"       => $query->paginate(20)
         ]);
     }
 

@@ -18,22 +18,46 @@ class EntregaController extends Controller
         $this->pedidoService = $pedidoService;
     }
 
-    public function index(Request $request)
+public function index(Request $request)
     {
         $query = Entrega::with('pedido')
             ->join('pedidos', 'entregas.pedido_id', '=', 'pedidos.id')
             ->select('entregas.*');
 
         if ($request->filled('codigo_postal')) {
-            $query->where('codigo_postal', $request->codigo_postal);
+            $query->where('entregas.codigo_postal', 'LIKE', '%' . $request->codigo_postal . '%');
         }
-        $orden = $request->input('orden', 'asc');
-        $query->orderBy('pedidos.fecha', $orden);
 
+        if ($request->filled('telefono')) {
+            $telf = $request->telefono;
+            $query->where(function($q) use ($telf) {
+                $q->where('pedidos.cliente_telf', 'LIKE', '%' . $telf . '%')
+                  ->orWhere('entregas.destinatario_telf', 'LIKE', '%' . $telf . '%');
+            });
+        }
+
+        if ($request->has('ordenar')) {
+            switch ($request->input('ordenar')) {
+                case 'cp':
+                    $query->orderBy('entregas.codigo_postal', 'asc');
+                    break;
+                case 'fecha_asc':
+                    $query->orderBy('pedidos.fecha', 'asc');
+                    break;
+                case 'fecha_desc':
+                    $query->orderBy('pedidos.fecha', 'desc');
+                    break;
+                default:
+                    $query->orderBy('pedidos.fecha', 'desc');
+                    break;
+            }
+        } else {
+            $query->orderBy('pedidos.fecha', 'desc');
+        }
         return response()->json([
             "num_entregas"   => $query->count(),
             "num_archivadas" => Entrega::onlyTrashed()->count(),
-            "entregas"       => $query->get()
+            "entregas"       => $query->paginate(20)
         ]);
     }
 
