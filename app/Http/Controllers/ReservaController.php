@@ -8,6 +8,7 @@ use App\Http\Requests\StoreReservaRequest;
 use App\Http\Requests\UpdateReservaRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class ReservaController extends Controller
 {
@@ -19,7 +20,7 @@ class ReservaController extends Controller
     }
     public function index(Request $request)
     {
-        $query = Reserva::->with('pedido')
+        $query = Reserva::with('pedido')
             ->join('pedidos', 'reservas.pedido_id', '=', 'pedidos.id')
             ->select('reservas.*'); 
         if ($request->filled('telefono')) {
