@@ -171,6 +171,11 @@
         }
         .lineasFijas::before { left: 69mm; }
         .lineasFijas::after { right: 69mm; }
+        .identificador{
+            position: fixed;
+            top: 3mm;
+            right: 3mm;
+        }
         @media print {
             @page {
                 size: A4;
