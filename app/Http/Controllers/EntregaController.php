@@ -8,6 +8,7 @@ use App\Http\Requests\StoreEntregaRequest;
 use App\Http\Requests\UpdateEntregaRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class EntregaController extends Controller
 {
@@ -118,9 +119,9 @@ public function index(Request $request)
         }
     }
     
-    public function generarPdf(Entrega $entrega)
+    public function generarPdf(int $id)
     {
-        $entrega->load('pedido'); 
+        $entrega = Entrega::withTrashed()->with('pedido')->findOrFail($id);   
 
         $html = view('pdf.albaran', compact('entrega'))->render(); 
 

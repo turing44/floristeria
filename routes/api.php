@@ -22,7 +22,7 @@ Route::delete("/entregas/{entrega}", [EntregaController::class, "destroy"]);
 Route::get("/entregas/archivadas", [EntregaController::class, "obtenerEliminadas"]);
 Route::get("/entregas/archivadas/{id}", [EntregaController::class, "obtenerEntregaEliminada"]);
 
-Route::get('/entregas/pdf/{entrega}', [EntregaController::class, 'generarPdf']);
+Route::get('/entregas/pdf/{id}', [EntregaController::class, 'generarPdf']);
 
 
 
@@ -35,6 +35,6 @@ Route::delete("/reservas/{reserva}", [ReservaController::class, "destroy"]);
 
 Route::get("/reservas/archivadas", [ReservaController::class, "obtenerEliminadas"]);
 Route::get("/reservas/archivadas/{id}", [ReservaController::class, "obtenerReservaEliminada"]);
-Route::get('/reservas/pdf/{reserva}', [ReservaController::class, 'generarPdf']);
+Route::get('/reservas/pdf/{id}', [ReservaController::class, 'generarPdf']);
 
 Route::post('/mensaje/pdf', [MensajeController::class, 'generarPdf']);
