@@ -57,7 +57,7 @@ public function index(Request $request)
         return response()->json([
             "num_entregas"   => $query->count(),
             "num_archivadas" => Entrega::onlyTrashed()->count(),
-            "entregas"       => $query->paginate(20)
+            "entregas"       => $query->get()
         ]);
     }
 

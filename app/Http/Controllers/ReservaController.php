@@ -46,7 +46,7 @@ class ReservaController extends Controller
         return response()->json([
             "num_reservas"   => $query->count(),
             "num_archivadas" => Reserva::onlyTrashed()->count(),
-            "reservas"       => $query->paginate(20)
+            "reservas"       => $query->get()
         ]);
     }
 
