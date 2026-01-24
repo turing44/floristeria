@@ -50,6 +50,9 @@
             flex-direction: column;
             justify-content: flex-start;
             flex: 1;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+            min-width: 0;
         }
         .bloqueContacto p {
             margin: 4px 0; 
@@ -141,7 +144,9 @@
             align-items: center;
             writing-mode: vertical-rl;   
             text-orientation: mixed;
-            overflow-wrap: break-word;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+            min-width: 0;
             transform: rotate(180deg);
             page-break-inside: avoid;
             transform-origin: center;
