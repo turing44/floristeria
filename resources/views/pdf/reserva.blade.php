@@ -154,7 +154,7 @@
         .lineasFijas {
             position: fixed;        
             left: 0;
-            bottom: 400px;
+            bottom: 25px;
             width: 100%;
             height: 80mm;
             pointer-events: none;
@@ -199,7 +199,7 @@
     
     @php
         use Carbon\Carbon;
-        // Obtenemos el pedido desde la entrega
+        // Obtenemos el pedido desde la reserva
         if(isset($reserva)) {
             $pedido = $reserva->pedido;
             // Aseguramos relación inversa
@@ -210,6 +210,49 @@
     <div class="lineasFijas"></div>
     <div class="identificador">{{$pedido->reserva->id}}</div>
     <div>
+
+        <div class="segmento">
+            
+            <div class="bloqueContacto">
+                <p>Cliente:</p>
+                <p id="colorAzul">{{ $pedido->cliente_nombre }}</p>
+                
+                <p>Teléfono Cliente:</p>
+                <p id="colorAzul">{{ $pedido->cliente_telf }}</p>
+
+                <p>Precio Total:</p>
+                <p id="colorAzul">{{ $pedido->precio ?? 'Recogida Tienda' }}</p>
+                
+                <p>Dinero a Contado:</p>
+                <p id="colorAzul">{{ $pedido->reserva->dinero_a_cuenta ?? '-' }}</p>
+                
+            </div>
+            
+            <div class="idPedido">
+                <div class="infoPedido">
+                    <div class="producto">
+                        <p>Producto: </p>
+                        <p id="colorAzul">{{ $pedido->producto }}</p>
+                    </div>
+                </div>
+                <div class="observaciones">
+                    <p>Observaciones: </p>
+                    <textarea id="colorAzul" readonly class="textarea">{{ $pedido->observaciones }}</textarea>
+                </div>
+            </div>
+            
+            <div class="bloqueFecha">
+                <div id="colorAzul">
+                    <p>{{ $pedido->fecha ? Carbon::parse($pedido->fecha)->format('d/m/Y') : ' ' }}</p>
+                </div>
+                <div class="fechaGigante">
+                    <p>{{ $pedido->fecha ? Carbon::parse($pedido->fecha)->format('d') : ' ' }}</p>
+                </div>
+                <div class="horario">
+                    <p>{{ $pedido->reserva->estado_pago }}</p>
+                </div>
+            </div>
+        </div>
 
         <div class="segmento">
             

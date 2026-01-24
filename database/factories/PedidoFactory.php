@@ -33,7 +33,7 @@ private function textoMin(int $min, int $max): string
     {
         return [
             'fuente'            => $this->faker->optional()->randomElement(['Interflora', 'Glovo', 'Web', 'Tienda Física']),
-            'producto'          => $this->faker->words(3, true),
+            'producto'          => $this->faker->words(20, true),
             'cliente_nombre'    => $this->nombreApellidosMinCaracteres(40,41),
             'cliente_telf'      => $this->faker->phoneNumber,
             'fecha'             => $this->faker->date(),
