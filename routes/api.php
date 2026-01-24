@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\EntregaController;
 use App\Http\Controllers\ReservaController;
 use App\Http\Controllers\MensajeController;
+use App\Http\Controllers\GoogleImportController;
 
 
 Route::get('/user', function (Request $request) {
@@ -40,3 +41,7 @@ Route::get('/reservas/pdf/{id}', [ReservaController::class, 'generarPdf']);
 Route::post('/mensaje/pdf', [MensajeController::class, 'generarPdf']);
 
 Route::post('/reservas/restaurar/{id}', [ReservaController::class, 'restaurar']);
+
+
+Route::get('/generar-link', [GoogleImportController::class, 'generarLink']);
+Route::get('/importar-pedidos', [App\Http\Controllers\GoogleImportController::class, 'importarPedidos']);
