@@ -11,7 +11,7 @@ class MensajeController extends Controller
     {
         $data = $request->validate([
             'texto_mensaje'  => 'required|string|max:5000',
-            'nombre_mensaje' => 'nullable|string|max:255', 
+            'nombre_mensaje' => 'required|string|max:255', 
         ]);
 
         $html = view('pdf.mensaje', compact('data'))->render();
