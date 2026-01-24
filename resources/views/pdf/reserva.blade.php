@@ -13,7 +13,6 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <base href="{{ url('/') }}"> 
     <style>
         @font-face {
             font-family: "Lucida Calligraphy";
@@ -155,7 +154,7 @@
         .lineasFijas {
             position: fixed;        
             left: 0;
-            bottom: 25px;
+            bottom: 400px;
             width: 100%;
             height: 80mm;
             pointer-events: none;
@@ -200,112 +199,41 @@
     @php
         use Carbon\Carbon;
         // Obtenemos el pedido desde la entrega
-        if(isset($entrega)) {
-            $pedido = $entrega->pedido;
+        if(isset($reserva)) {
+            $pedido = $reserva->pedido;
             // Aseguramos relación inversa
-            $pedido->setRelation('entrega', $entrega); 
+            $pedido->setRelation('reserva', $reserva); 
         }
     @endphp
 
     <div class="lineasFijas"></div>
-    <div class="identificador">{{$pedido->entrega->id}}</div>
+    <div class="identificador">{{$pedido->reserva->id}}</div>
     <div>
-        <div class="segmento">
-            
-            <div class="bloqueContacto">
-                <p>Destinatario:</p>
-                <p id="colorAzul">{{ $pedido->nombre_mensaje ?? 'Recogida Tienda' }}</p>
-                
-                <p>Teléfono Destinatario:</p>
-                <p id="colorAzul">{{ $pedido->entrega->destinatario_telf ?? '-' }}</p>
-                
-                <p>Cliente:</p>
-                <p id="colorAzul">{{ $pedido->cliente_nombre }}</p>
-                
-                <p>Teléfono Cliente:</p>
-                <p id="colorAzul">{{ $pedido->cliente_telf }}</p>
-            </div>
-            
-            <div class="idPedido">
-                <div class="infoPedido">
-                    <div class="direccion">
-                        <p>Dirección: </p>
-                        <p id="colorAzul">{{ $pedido->entrega->direccion ?? 'Recogida Local' }} {{ $pedido->entrega->codigo_postal ?? '' }}</p>
-                    </div>
-                    
-                    <div class="producto">
-                        <p>Producto: </p>
-                        <p id="colorAzul">{{ $pedido->producto }}</p>
-                    </div>
-                    
-                    <div class="fuente">
-                        <p>Fuente: </p>
-                        {{-- FIX: Ahora está en pedido --}}
-                        <p id="colorAzul">{{ $pedido->fuente ?? 'Tienda' }}</p>
-                    </div>
-                </div>
-                
-                <div class="observaciones">
-                    <p>Observaciones: </p>
-                    <textarea id="colorAzul" readonly class="textarea">{{ $pedido->observaciones }}</textarea>
-                </div>
-            </div>
-            
-            <div class="bloqueFecha">
-                <div id="colorAzul">
-                    {{-- FIX: Ahora es $pedido->fecha --}}
-                    <p>{{ $pedido->fecha ? Carbon::parse($pedido->fecha)->format('d/m/Y') : '--/--' }}</p>
-                </div>
-                <div class="fechaGigante">
-                    {{-- FIX: Ahora es $pedido->fecha --}}
-                    <p>{{ $pedido->fecha ? Carbon::parse($pedido->fecha)->format('d') : '?' }}</p>
-                </div>
-                <div class="horario">
-                    {{-- FIX: Ahora es $pedido->horario --}}
-                    <p>{{ $pedido->horario }}</p>
-                </div>
-                <div id="colorAzul" style="text-align: center;">
-                    <p>Entregado</p>
-                    <p class="confirmacionEntrega">SÍ / NO</p>
-                </div>
-            </div>
-        </div>
 
         <div class="segmento">
             
             <div class="bloqueContacto">
-                <p>Destinatario:</p>
-                <p id="colorAzul">{{ $pedido->nombre_mensaje ?? 'Recogida Tienda' }}</p>
-                
-                <p>Teléfono Destinatario:</p>
-                <p id="colorAzul">{{ $pedido->entrega->destinatario_telf ?? '-' }}</p>
-                
                 <p>Cliente:</p>
                 <p id="colorAzul">{{ $pedido->cliente_nombre }}</p>
                 
                 <p>Teléfono Cliente:</p>
                 <p id="colorAzul">{{ $pedido->cliente_telf }}</p>
+
+                <p>Precio Total:</p>
+                <p id="colorAzul">{{ $pedido->precio ?? 'Recogida Tienda' }}</p>
+                
+                <p>Dinero a Contado:</p>
+                <p id="colorAzul">{{ $pedido->reserva->dinero_a_cuenta ?? '-' }}</p>
+                
             </div>
             
             <div class="idPedido">
                 <div class="infoPedido">
-                    <div class="direccion">
-                        <p>Dirección: </p>
-                        <p id="colorAzul">{{ $pedido->entrega->direccion ?? 'Recogida Local' }} {{ $pedido->entrega->codigo_postal ?? '' }}</p>
-                    </div>
-                    
                     <div class="producto">
                         <p>Producto: </p>
                         <p id="colorAzul">{{ $pedido->producto }}</p>
                     </div>
-                    
-                    <div class="fuente">
-                        <p>Fuente: </p>
-                        {{-- FIX: Ahora está en pedido --}}
-                        <p id="colorAzul">{{ $pedido->fuente ?? 'Tienda' }}</p>
-                    </div>
                 </div>
-                
                 <div class="observaciones">
                     <p>Observaciones: </p>
                     <textarea id="colorAzul" readonly class="textarea">{{ $pedido->observaciones }}</textarea>
@@ -314,21 +242,13 @@
             
             <div class="bloqueFecha">
                 <div id="colorAzul">
-                    {{-- FIX: Ahora es $pedido->fecha --}}
-                    <p>{{ $pedido->fecha ? Carbon::parse($pedido->fecha)->format('d/m/Y') : '--/--' }}</p>
+                    <p>{{ $pedido->fecha ? Carbon::parse($pedido->fecha)->format('d/m/Y') : ' ' }}</p>
                 </div>
                 <div class="fechaGigante">
-                    {{-- FIX: Ahora es $pedido->fecha --}}
-                    <p>{{ $pedido->fecha ? Carbon::parse($pedido->fecha)->format('d') : '?' }}</p>
+                    <p>{{ $pedido->fecha ? Carbon::parse($pedido->fecha)->format('d') : ' ' }}</p>
                 </div>
                 <div class="horario">
-                    {{-- FIX: Ahora es $pedido->horario --}}
-                    <p>{{ $pedido->horario }}</p>
-                </div>
-                <div class="checkbox">
-                        <label>
-                            <input type="checkbox">
-                        </label>
+                    <p>{{ $pedido->reserva->estado_pago }}</p>
                 </div>
             </div>
         </div>
@@ -337,12 +257,12 @@
             <div class="mensajeDeLado">
                 <p>
                     {{-- FIX: Mensaje unificado en Pedido --}}
-                    "{{ $pedido->texto_mensaje ?? '- Sin Mensaje -' }}"
+                    "{{ $pedido->texto_mensaje ?? ' ' }}"
                 </p>
             </div>
             <div class="divVacio"></div>
             <div class="nombreDestinatario">
-               <p>{{ $pedido->nombre_mensaje ?? $pedido->cliente_nombre }}</p> 
+               <p>{{ $pedido->nombre_mensaje ?? " " }}</p> 
             </div>
         </div>
     </div>
