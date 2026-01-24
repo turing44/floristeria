@@ -106,9 +106,9 @@ class ReservaController extends Controller
             return response()->json(['error' => $e->getMessage()], 404);
         }
     }
-    public function generarPdf(Reserva $reserva)
+    public function generarPdf(int $id)
     {
-        $reserva->load('pedido'); 
+        $reserva = Reserva::withTrashed()->with('pedido')->findOrFail($id);
 
         $html = view('pdf.reserva', ['reserva' => $reserva])->render(); 
 
