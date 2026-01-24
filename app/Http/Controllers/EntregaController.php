@@ -179,4 +179,19 @@ public function index(Request $request)
             ->where('id', $id)
             ->firstOrFail();
     }
+
+    public function restaurar($id)
+    {
+        $entrega = Entrega::withTrashed()->with('pedido')->findOrFail($id);
+        $entrega->restore();
+
+        if ($entrega->pedido && $entrega->pedido->trashed()) {
+            $entrega->pedido->restore();
+        }
+
+        return response()->json([
+            'mensaje' => 'Entrega y Pedido restaurados correctamente',
+            'entrega' => $entrega
+        ]);
+    }
 }

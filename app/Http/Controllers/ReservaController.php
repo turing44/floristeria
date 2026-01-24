@@ -167,4 +167,19 @@ class ReservaController extends Controller
             ->where('id', $id)
             ->firstOrFail();
     }
+
+        public function restaurar($id)
+    {
+        $reserva = Reserva::withTrashed()->with('pedido')->findOrFail($id);
+        $reserva->restore();
+
+        if ($reserva->pedido && $reserva->pedido->trashed()) {
+            $reserva->pedido->restore();
+        }
+
+        return response()->json([
+            'mensaje' => 'Reserva y Pedido restaurados correctamente',
+            'reserva' => $reserva
+        ]);
+    } 
 }
