@@ -196,6 +196,7 @@
 </head>
 
 <body>
+    
     @php
         use Carbon\Carbon;
         // Obtenemos el pedido desde la entrega
