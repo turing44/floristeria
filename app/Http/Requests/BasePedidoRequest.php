@@ -18,15 +18,15 @@ class BasePedidoRequest extends FormRequest
         $prefix = $isUpdate ? 'nullable' : 'required';
 
         return [
-            'cliente_nombre' => "$prefix|string|max:255",
+            'cliente_nombre' => "$prefix|string|max:40",
             'cliente_telf'   => "$prefix|string|max:20",
             'precio'         => "$prefix|numeric|min:0",
-            'producto'       => "$prefix|string|max:255",
+            'producto'       => "$prefix|string|max:150",
             'fecha'          => "$prefix|date",
             'horario'        => 'nullable|in:MAÑANA,TARDE,INDIFERENTE',
-            'observaciones'  => 'nullable|string|max:1000',
-            'texto_mensaje'  => 'nullable|string|max:500',
-            'nombre_mensaje' => 'nullable|string|max:255',
+            'observaciones'  => 'nullable|string|max:230',
+            'nombre_mensaje' => 'nullable|string',
+            'texto_mensaje'  => 'nullable|string|max:255',
             'fuente'         => 'nullable|string',
         ];
     }
@@ -54,6 +54,35 @@ class BasePedidoRequest extends FormRequest
             'codigo_postal.required'  => 'El código postal es obligatorio.',
             'destinatario_telf.required' => 'El teléfono del destinatario es obligatorio.',
         ];
+    }
+
+    protected function withValidator($validator)
+    {
+        $validator->after(function ($validator) {
+            $texto = $this->input('nombre_mensaje');
+
+            if (!$texto) return;
+
+            $palabras = preg_split('/\s+/', trim($texto));
+
+            if (count($palabras) > 3) {
+                $validator->errors()->add(
+                    'nombre_mensaje',
+                    'El mensaje no puede tener más de 3 palabras.'
+                );
+                return;
+            }
+
+            foreach ($palabras as $palabra) {
+                if (mb_strlen($palabra) > 12) {
+                    $validator->errors()->add(
+                        'nombre_mensaje',
+                        'Cada palabra del mensaje no puede superar los 12 caracteres.'
+                    );
+                    return;
+                }
+            }
+        });
     }
 
     protected function failedValidation(Validator $validator)

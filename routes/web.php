@@ -16,5 +16,3 @@ Route::get('/demo/florista', function () {
 Route::get('/pedido-magic-view/{token}', function ($token) {
     return view('demo-cliente', ['token' => $token]);
 });
-
-Route::get('/pedido/{id}/pdf', [PedidoController::class, 'generarpdf']);
