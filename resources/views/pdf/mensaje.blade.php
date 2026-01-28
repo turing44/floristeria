@@ -34,26 +34,17 @@
             height: 297mm; /* Forzamos altura completa A4 */
             background-color: white;
         }
-        
-        /* --- ESTO ES LO NUEVO: EL CONTENEDOR QUE EMPUJA TODO ABAJO --- */
-        .contenedor-inferior {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 99mm; /* La altura exacta de la tarjeta */
-            /* Border opcional para ver donde acaba si quieres depurar: border-top: 1px dashed blue; */
-        }
 
-        .segmentoMensaje {
+        .segmentoMensaje{
             display: flex;
             flex-direction: row;
             justify-content: center;
-            align-items: center;
+            align-items: flex-start;
             width: 100%;
-            height: 100%; /* Ocupa todo el alto del contenedor inferior */
             gap: 40px;
+            height: 99mm; 
             box-sizing: border-box;
+            page-break-inside: avoid; 
         }
         
         .divVacio {
@@ -105,7 +96,7 @@
         .lineasFijas {
             position: absolute;        
             left: 0;
-            bottom: 25px; /* Ajustado para que cuadre visualmente */
+            bottom: 850px; /* Ajustado para que cuadre visualmente */
             width: 100%;
             height: 80mm;
             pointer-events: none;
@@ -124,9 +115,7 @@
      </style>
 </head>
 
-<body>
-    <div class="contenedor-inferior">
-        
+<body>        
         <div class="lineasFijas"></div>
 
         <div class="segmentoMensaje">
@@ -147,6 +136,5 @@
             </div>
             
         </div>
-    </div>
 </body>
 </html>

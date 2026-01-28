@@ -176,11 +176,17 @@
         }
         .lineasFijas::before { left: 69mm; }
         .lineasFijas::after { right: 69mm; }
-        .identificador{
+        .identificadorPrimeraParte{
             position: fixed;
             top: 1.5mm;
             right: 3mm;
-            font-size:40px; 
+            font-size:35px; 
+        }
+        .identificadorSegundaParte{
+            position: fixed;
+            top: 100.5mm;
+            right: 3mm;
+            font-size:35px; 
         }
         @media print {
             @page {
@@ -212,8 +218,8 @@
         }
     @endphp
 
-    <div class="lineasFijas"></div>
-    <div class="identificador">E{{$pedido->entrega->id}}</div>
+    <div class="identificadorPrimeraParte">R{{$pedido->entrega->id}}</div>
+    <div class="identificadorSegundaParte">R{{$pedido->entrega->id}}</div>    
     <div>
         <div class="segmento">
             
@@ -335,16 +341,20 @@
         </div>
 
         <div class="segmentoMensaje">
-            <div class="mensajeDeLado">
-                <p>
-                    {{-- FIX: Mensaje unificado en Pedido --}}
-                    "{{ $pedido->texto_mensaje ?? ' ' }}"
-                </p>
-            </div>
-            <div class="divVacio"></div>
-            <div class="nombreDestinatario">
-               <p>{{ $pedido->nombre_mensaje ?? " " }}</p> 
-            </div>
+            @if(!blank($pedido->texto_mensaje))
+                <div class="mensajeDeLado">
+                    <p>
+                        {{-- FIX: Mensaje unificado en Pedido --}}
+                        "{{ $pedido->texto_mensaje ?? ' ' }}"
+                    </p>
+                </div>
+                <div class="divVacio"></div>
+                <div class="nombreDestinatario">
+                    <p>{{ $pedido->nombre_mensaje ?? " " }}</p> 
+                </div>
+                <div class="lineasFijas"></div>
+
+            @endif
         </div>
     </div>
 </body>
