@@ -213,7 +213,7 @@
     @endphp
 
     <div class="lineasFijas"></div>
-    <div class="identificador">{{$pedido->entrega->id}}</div>
+    <div class="identificador">E{{$pedido->entrega->id}}</div>
     <div>
         <div class="segmento">
             
@@ -221,13 +221,11 @@
                 <p>Destinatario:</p>
                 <p id="colorAzul">{{ $pedido->nombre_mensaje ?? 'Recogida Tienda' }}</p>
                 
-                <p>Teléfono Destinatario:</p>
                 <p id="colorAzul">{{ $pedido->entrega->destinatario_telf ?? '-' }}</p>
                 
                 <p>Cliente:</p>
                 <p id="colorAzul">{{ $pedido->cliente_nombre }}</p>
                 
-                <p>Teléfono Cliente:</p>
                 <p id="colorAzul">{{ $pedido->cliente_telf }}</p>
             </div>
             
@@ -244,9 +242,9 @@
                     </div>
                     
                     <div class="fuente">
-                        <p>Fuente: </p>
+                        <p>Precio: </p>
                         {{-- FIX: Ahora está en pedido --}}
-                        <p id="colorAzul">{{ $pedido->fuente ?? 'Tienda' }}</p>
+                        <p id="colorAzul">{{ $pedido->precio ?? '0' }}</p>
                     </div>
                 </div>
                 
@@ -270,8 +268,8 @@
                     <p>{{ $pedido->horario }}</p>
                 </div>
                 <div id="colorAzul" style="text-align: center;">
-                    <p>Entregado</p>
-                    <p class="confirmacionEntrega">SÍ / NO</p>
+                    <p>En mano</p>
+                    <p class="confirmacionEntrega">Si/No</p>
                 </div>
             </div>
         </div>
@@ -280,15 +278,13 @@
             
             <div class="bloqueContacto">
                 <p>Destinatario:</p>
-                <p id="colorAzul">{{ $pedido->nombre_mensaje ?? 'Recogida Tienda' }}</p>
+                <p id="colorAzul">{{ $pedido->nombre_mensaje ?? '#' }}</p>
                 
-                <p>Teléfono Destinatario:</p>
-                <p id="colorAzul">{{ $pedido->entrega->destinatario_telf ?? '-' }}</p>
+                <p id="colorAzul">{{ $pedido->entrega->destinatario_telf ?? '#' }}</p>
                 
                 <p>Cliente:</p>
                 <p id="colorAzul">{{ $pedido->cliente_nombre }}</p>
                 
-                <p>Teléfono Cliente:</p>
                 <p id="colorAzul">{{ $pedido->cliente_telf }}</p>
             </div>
             
@@ -296,7 +292,7 @@
                 <div class="infoPedido">
                     <div class="direccion">
                         <p>Dirección: </p>
-                        <p id="colorAzul">{{ $pedido->entrega->direccion ?? 'Recogida Local' }} {{ $pedido->entrega->codigo_postal ?? '' }}</p>
+                        <p id="colorAzul">{{ $pedido->entrega->direccion ?? 'Recogida Local' }},  {{ $pedido->entrega->codigo_postal ?? '' }}</p>
                     </div>
                     
                     <div class="producto">
@@ -305,9 +301,9 @@
                     </div>
                     
                     <div class="fuente">
-                        <p>Fuente: </p>
+                        <p>Precio: </p>
                         {{-- FIX: Ahora está en pedido --}}
-                        <p id="colorAzul">{{ $pedido->fuente ?? 'Tienda' }}</p>
+                        <p id="colorAzul">{{ $pedido->precio ?? '0' }}</p>
                     </div>
                 </div>
                 
@@ -320,11 +316,11 @@
             <div class="bloqueFecha">
                 <div id="colorAzul">
                     {{-- FIX: Ahora es $pedido->fecha --}}
-                    <p>{{ $pedido->fecha ? Carbon::parse($pedido->fecha)->format('d/m/Y') : '--/--' }}</p>
+                    <p>{{ $pedido->fecha ? Carbon::parse($pedido->fecha)->format('d/m/Y') : ' / / ' }}</p>
                 </div>
                 <div class="fechaGigante">
                     {{-- FIX: Ahora es $pedido->fecha --}}
-                    <p>{{ $pedido->fecha ? Carbon::parse($pedido->fecha)->format('d') : '?' }}</p>
+                    <p>{{ $pedido->fecha ? Carbon::parse($pedido->fecha)->format('d') : ' ' }}</p>
                 </div>
                 <div class="horario">
                     {{-- FIX: Ahora es $pedido->horario --}}
@@ -342,12 +338,12 @@
             <div class="mensajeDeLado">
                 <p>
                     {{-- FIX: Mensaje unificado en Pedido --}}
-                    "{{ $pedido->texto_mensaje ?? '- Sin Mensaje -' }}"
+                    "{{ $pedido->texto_mensaje ?? ' ' }}"
                 </p>
             </div>
             <div class="divVacio"></div>
             <div class="nombreDestinatario">
-               <p>{{ $pedido->nombre_mensaje ?? $pedido->cliente_nombre }}</p> 
+               <p>{{ $pedido->nombre_mensaje ?? " " }}</p> 
             </div>
         </div>
     </div>

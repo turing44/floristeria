@@ -91,14 +91,14 @@
         .fechaGigante{
             display: flex;
             justify-content: flex-start;
-            color: red;
+            color: rgb(206, 0, 206);
             font-size: 75px;
         }
         .fechaGigante p{ margin: 7px 0; }
         .horario{
             display: flex;
             justify-content: flex-start;
-            color: red;
+            color: rgb(255, 0, 206);
             font-size: 30px;
         }
         .horario p{ margin: 7px 0; }
@@ -213,7 +213,7 @@
     @endphp
 
     <div class="lineasFijas"></div>
-    <div class="identificador">{{$pedido->reserva->id}}</div>
+    <div class="identificador">R{{$pedido->reserva->id}}</div>
     <div>
 
         <div class="segmento">
@@ -221,15 +221,14 @@
             <div class="bloqueContacto">
                 <p>Cliente:</p>
                 <p id="colorAzul">{{ $pedido->cliente_nombre }}</p>
-                
-                <p>Teléfono Cliente:</p>
+    
                 <p id="colorAzul">{{ $pedido->cliente_telf }}</p>
 
                 <p>Precio Total:</p>
-                <p id="colorAzul">{{ $pedido->precio ?? 'Recogida Tienda' }}</p>
+                <p id="colorAzul">{{ $pedido->precio ?? 'No definido' }}</p>
                 
-                <p>Dinero a Contado:</p>
-                <p id="colorAzul">{{ $pedido->reserva->dinero_a_cuenta ?? '-' }}</p>
+                <p>Pendiente por pagar:</p>
+                <p id="colorAzul">{{ $pedido->reserva->dinero_a_cuenta ?? '0' }}</p>
                 
             </div>
             
@@ -260,19 +259,17 @@
         </div>
 
         <div class="segmento">
-            
             <div class="bloqueContacto">
                 <p>Cliente:</p>
                 <p id="colorAzul">{{ $pedido->cliente_nombre }}</p>
                 
-                <p>Teléfono Cliente:</p>
                 <p id="colorAzul">{{ $pedido->cliente_telf }}</p>
 
                 <p>Precio Total:</p>
-                <p id="colorAzul">{{ $pedido->precio ?? 'Recogida Tienda' }}</p>
+                <p id="colorAzul">{{ $pedido->precio ?? 'No definido' }}</p>
                 
                 <p>Dinero a Contado:</p>
-                <p id="colorAzul">{{ $pedido->reserva->dinero_a_cuenta ?? '-' }}</p>
+                <p id="colorAzul">{{ $pedido->reserva->dinero_a_cuenta ?? '0' }}</p>
                 
             </div>
             
@@ -301,12 +298,12 @@
                 </div>
             </div>
         </div>
-
+        
         <div class="segmentoMensaje">
             <div class="mensajeDeLado">
                 <p>
                     {{-- FIX: Mensaje unificado en Pedido --}}
-                    "{{ $pedido->texto_mensaje ?? ' ' }}"
+                    {{ $pedido->texto_mensaje ?? ' ' }}
                 </p>
             </div>
             <div class="divVacio"></div>
