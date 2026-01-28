@@ -83,7 +83,7 @@
         }
         .textarea{
             width: 370px;
-            height: 70px;
+            height: 90px;
             border: 1px solid #ccc;
             padding: 10px;
             resize: none;
