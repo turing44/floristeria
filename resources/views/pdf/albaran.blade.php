@@ -178,13 +178,13 @@
         .lineasFijas::after { right: 69mm; }
         .identificadorPrimeraParte{
             position: fixed;
-            top: 1.5mm;
+            top: 0.5mm;
             right: 3mm;
             font-size:35px; 
         }
         .identificadorSegundaParte{
             position: fixed;
-            top: 100.5mm;
+            top: 99.5mm;
             right: 3mm;
             font-size:35px; 
         }
