@@ -39,7 +39,7 @@
             display: flex;
             flex-direction: row;
             justify-content: center;
-            align-items: flex-start;
+            align-items: center;
             width: 100%;
             gap: 40px;
             height: 99mm; 
@@ -96,7 +96,7 @@
         .lineasFijas {
             position: absolute;        
             left: 0;
-            bottom: 850px; /* Ajustado para que cuadre visualmente */
+            bottom: 785px; /* Ajustado para que cuadre visualmente */
             width: 100%;
             height: 80mm;
             pointer-events: none;
@@ -107,8 +107,8 @@
             position: absolute;
             top: 10mm;            
             bottom: 10mm;          
-            width: 0.3px;
-            background: #000;
+            width: 0.1px;
+            background: #999999; /*color de la linea*/
         }
         .lineasFijas::before { left: 69mm; }
         .lineasFijas::after { right: 69mm; }
@@ -123,7 +123,7 @@
             {{-- Mensaje Izquierda --}}
             <div class="mensajeDeLado">
                 <p>
-                    "{{ $data['texto_mensaje'] }}"
+                    {{ $data['texto_mensaje'] }}
                 </p>
             </div>
             

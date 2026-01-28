@@ -65,10 +65,10 @@ class BasePedidoRequest extends FormRequest
 
             $palabras = preg_split('/\s+/', trim($texto));
 
-            if (count($palabras) > 3) {
+            if (count($palabras) > 5) {
                 $validator->errors()->add(
                     'nombre_mensaje',
-                    'El mensaje no puede tener más de 3 palabras.'
+                    'El destinatario no puede tener más de 5 palabras.'
                 );
                 return;
             }

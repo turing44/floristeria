@@ -32,9 +32,9 @@ class GoogleImportController extends Controller
     const COL_OBSERVACIONES = 13; // Columna N
 
     // CONFIGURACIÓN DE URLS
-    private $urlAppsScript = "https://script.google.com/macros/s/AKfycbxjrZgpAP6OYQMoeIAG2V1eEEvAQVv1pMo29jWhuKz14kNbQhiXDdFu7FMqgQNzTFr33w/exec"; 
+    private $urlAppsScript = "https://script.google.com/macros/s/AKfycbx1Nc0gh95S2Nx6TrbIDkWwhjEUymbx8nX-5G9qYhb0piGaz7gHubfpE2QtCJ-EAz-v/exec"; 
     // Pega aquí tu enlace CSV publicado (Archivo > Compartir > Publicar en la web > CSV)
-    private $urlHojaCalculoCsv = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTcWlE55K4GT4zoO3S1x18DVNPMaL0hg05khWyJPywt12v5Hebiw8dZVr16cNA-viNz6L4M5ydoaiIY/pub?gid=1554317534&single=true&output=csv";
+    private $urlHojaCalculoCsv = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS7lemc60mII-T9NcBnTOgq_F-BhdnMdZRhmWiJG08bajNObCO3MAT40TTyFB-Cf5k-R03izkB1FfRC/pub?gid=744467455&single=true&output=csv";
 
     public function generarLink()
     {

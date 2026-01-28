@@ -172,7 +172,7 @@
             top: 10mm;            
             bottom: 10mm;          
             width: 0.3px;
-            background: #000;
+            background: #999999;
         }
         .lineasFijas::before { left: 69mm; }
         .lineasFijas::after { right: 69mm; }
