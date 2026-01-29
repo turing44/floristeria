@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('reservas', function (Blueprint $table) {
-            $table->renameColumn('dinero_dejado_a_cuenta', 'dinero_pendiente');
+            $table->renameColumn('dinero_a_cuenta', 'dinero_pendiente');
         });
     }
 
@@ -22,7 +22,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('reservas', function (Blueprint $table) {
-            $table->renameColumn('dinero_pendiente', 'dinero_dejado_a_cuenta');
+            $table->renameColumn('dinero_pendiente', 'dinero_a_cuenta');
         });
     }
 };
