@@ -3,19 +3,21 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <style>
-        .body{ background-color: red; }
-        .segmento{
+        .body { background-color: red; }
+
+        .segmentoTicket {
             display: flex;
             flex-direction: row;
             justify-content: center;
-            align-items: flex-start, stretch;
+            align-items: flex-start;
             width: 100%;
             gap: 40px;
-            height: 99mm; 
+            height: 99mm;
             box-sizing: border-box;
-            page-break-inside: avoid; 
+            page-break-inside: avoid;
         }
-        .bloqueContacto{
+
+        .bloqueCliente{
             display: flex;
             flex-direction: column;
             justify-content: flex-start;
@@ -24,18 +26,19 @@
             word-break: break-word;
             min-width: 0;
         }
-        .bloqueContacto p {
-            margin: 4px 0; 
+        .bloqueCliente p {
+            margin: 4px 0;
             padding-top: 5px;
         }
-        .idPedido{
+
+        .bloquePedido{
             display: flex;
             flex-direction: column;
-            justify-content: left;
-            align-items: flex-start;
             justify-content: flex-start;
-            flex:1;
+            align-items: flex-start;
+            flex: 1;
         }
+
         .bloqueFecha {
             display: flex;
             flex-direction: column;
@@ -43,36 +46,45 @@
             align-items: center;
             flex: 1;
         }
+
         .infoPedido{
             display: flex;
             flex-direction: column;
         }
-        .direccion, .producto, .fuente{
+
+        .filaDireccion, .filaProducto, .filaFuente{
             display: flex;
             flex-direction: row;
         }
-        .textarea{
+
+        .cajaObservaciones{
             width: 370px;
-            height: 70px;
+            height: 120px;
             border: 1px solid #ccc;
             padding: 10px;
-            resize: none;
+            box-sizing: border-box;
+            overflow: hidden;
+            white-space: pre-wrap;
         }
-        .fecha{ display: flex; }
-        .fechaGigante{
+
+        .filaFecha{ display: flex; }
+
+        .diaGigante{
             display: flex;
             justify-content: flex-start;
             color: rgb(206, 0, 206);
             font-size: 75px;
         }
-        .fechaGigante p{ margin: 7px 0; }
-        .horario{
+        .diaGigante p{ margin: 7px 0; }
+
+        .lineaEstado{
             display: flex;
             justify-content: flex-start;
             color: rgb(255, 0, 206);
             font-size: 30px;
         }
-        .horario p{ margin: 7px 0; }
+        .lineaEstado p{ margin: 7px 0; }
+
         .checkbox input[type="checkbox"]{
             margin: 36px 0;
             transform: scale(6);
@@ -81,19 +93,22 @@
             margin: 0%;
             font-size: 50px;
         }
-        #colorAzul{ color: blue; }
-        .identificadorPrimeraParte{
+
+        .textoAzul{ color: blue; }
+
+        .idReservaSuperior{
             position: fixed;
             top: 1.5mm;
             right: 3mm;
-            font-size:35px; 
+            font-size: 35px;
         }
-        .identificadorSegundaParte{
+        .idReservaInferior{
             position: fixed;
             top: 100.5mm;
             right: 3mm;
-            font-size:35px; 
+            font-size: 35px;
         }
+
         @media print {
             @page {
                 size: A4;
@@ -105,113 +120,79 @@
                 height: 297mm;
                 box-sizing: border-box;
             }
-            .segmento {
+            .segmentoTicket {
                 padding: 5mm;
-                page-break-inside: avoid; 
+                page-break-inside: avoid;
             }
         }
      </style>
 </head>
 
 <body>
-    
     @php
         use Carbon\Carbon;
-        // Obtenemos el pedido desde la reserva
+
         if(isset($reserva)) {
             $pedido = $reserva->pedido;
-            // Aseguramos relación inversa
-            $pedido->setRelation('reserva', $reserva); 
+            $pedido->setRelation('reserva', $reserva);
         }
+
+        $fechaFormateada = $pedido->fecha ? Carbon::parse($pedido->fecha)->format('d/m/Y') : ' ';
+        $diaFormateado   = $pedido->fecha ? Carbon::parse($pedido->fecha)->format('d') : ' ';
     @endphp
 
     <div class="lineasFijas"></div>
-    <div class="identificadorPrimeraParte">R{{$pedido->reserva->id}}</div>
-    <div class="identificadorSegundaParte">R{{$pedido->reserva->id}}</div>
+    <div class="idReservaSuperior">R{{$pedido->reserva->id}}</div>
+    <div class="idReservaInferior">R{{$pedido->reserva->id}}</div>
+
     <div>
+        @for($i = 0; $i < 2; $i++)
+            <div class="segmentoTicket">
 
-        <div class="segmento">
-            
-            <div class="bloqueContacto">
-                <p>Cliente:</p>
-                <p id="colorAzul">{{ $pedido->cliente_nombre }}</p>
-    
-                <p id="colorAzul">{{ $pedido->cliente_telf }}</p>
+                <div class="bloqueCliente">
+                    <p>Cliente:</p>
+                    <p class="textoAzul">{{ $pedido->cliente_nombre }}</p>
 
-                <p>Precio Total:</p>
-                <p id="colorAzul">{{ $pedido->precio ?? 'No definido' }}</p>
-                
-                <p>Pendiente por pagar:</p>
-                <p id="colorAzul">{{ $pedido->reserva->dinero_a_cuenta ?? '0' }}</p>
-                
-            </div>
-            
-            <div class="idPedido">
-                <div class="infoPedido">
-                    <div class="producto">
-                        <p>Producto: </p>
-                        <p id="colorAzul">{{ $pedido->producto }}</p>
+                    <p class="textoAzul">{{ $pedido->cliente_telf }}</p>
+
+                    <p>Precio Total:</p>
+                    <p class="textoAzul">{{ $pedido->precio ?? 'No definido' }}</p>
+
+                    <p>Dinero Pendiente:</p>
+                    <p class="textoAzul">{{ $pedido->reserva->dinero_pendiente ?? '0' }}</p>
+                </div>
+
+                <div class="bloquePedido">
+                    <div class="infoPedido">
+                        <div class="filaProducto">
+                            <p>Producto: </p>
+                            <p class="textoAzul">{{ $pedido->producto }}</p>
+                        </div>
+                    </div>
+
+                    <div class="observaciones">
+                        <p>Observaciones: </p>
+                        <div class="cajaObservaciones textoAzul">{{ $pedido->observaciones }}</div>
                     </div>
                 </div>
-                <div class="observaciones">
-                    <p>Observaciones: </p>
-                    <textarea id="colorAzul" readonly class="textarea">{{ $pedido->observaciones }}</textarea>
-                </div>
-            </div>
-            
-            <div class="bloqueFecha">
-                <div id="colorAzul">
-                    <p>{{ $pedido->fecha ? Carbon::parse($pedido->fecha)->format('d/m/Y') : ' ' }}</p>
-                </div>
-                <div class="fechaGigante">
-                    <p>{{ $pedido->fecha ? Carbon::parse($pedido->fecha)->format('d') : ' ' }}</p>
-                </div>
-                <div class="horario">
-                    <p>{{ $pedido->reserva->estado_pago }}</p>
-                </div>
-            </div>
-        </div>
 
-        <div class="segmento">
-            <div class="bloqueContacto">
-                <p>Cliente:</p>
-                <p id="colorAzul">{{ $pedido->cliente_nombre }}</p>
-                
-                <p id="colorAzul">{{ $pedido->cliente_telf }}</p>
+                <div class="bloqueFecha">
+                    <div class="textoAzul">
+                        <p>{{ $fechaFormateada }}</p>
+                    </div>
 
-                <p>Precio Total:</p>
-                <p id="colorAzul">{{ $pedido->precio ?? 'No definido' }}</p>
-                
-                <p>Dinero a Contado:</p>
-                <p id="colorAzul">{{ $pedido->reserva->dinero_a_cuenta ?? '0' }}</p>
-                
-            </div>
-            
-            <div class="idPedido">
-                <div class="infoPedido">
-                    <div class="producto">
-                        <p>Producto: </p>
-                        <p id="colorAzul">{{ $pedido->producto }}</p>
+                    <div class="diaGigante">
+                        <p>{{ $diaFormateado }}</p>
+                    </div>
+
+                    <div class="lineaEstado">
+                        <p>{{ $pedido->reserva->estado_pago }}</p>
                     </div>
                 </div>
-                <div class="observaciones">
-                    <p>Observaciones: </p>
-                    <textarea id="colorAzul" readonly class="textarea">{{ $pedido->observaciones }}</textarea>
-                </div>
+
             </div>
-            
-            <div class="bloqueFecha">
-                <div id="colorAzul">
-                    <p>{{ $pedido->fecha ? Carbon::parse($pedido->fecha)->format('d/m/Y') : ' ' }}</p>
-                </div>
-                <div class="fechaGigante">
-                    <p>{{ $pedido->fecha ? Carbon::parse($pedido->fecha)->format('d') : ' ' }}</p>
-                </div>
-                <div class="horario">
-                    <p>{{ $pedido->reserva->estado_pago }}</p>
-                </div>
-            </div>
-        </div>
+        @endfor
     </div>
 </body>
 </html>
+

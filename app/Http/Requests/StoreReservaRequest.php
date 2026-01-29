@@ -9,8 +9,8 @@ class StoreReservaRequest extends BasePedidoRequest
         $comunes = $this->reglasComunes(isUpdate: false);
 
         return array_merge($comunes, [
-            'dinero_dejado_a_cuenta' => 'nullable|numeric|min:0',
-            'estado_pago'            => 'nullable|string|in:PAGADO,PENDIENTE',
+            'dinero_pendiente' => 'nullable|numeric|min:0',
+            'estado_pago'   => 'required|string|in:PAGADO,PENDIENTE',
         ]);
     }
 }

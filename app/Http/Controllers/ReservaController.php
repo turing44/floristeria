@@ -60,8 +60,8 @@ class ReservaController extends Controller
             return DB::transaction(function () use ($datos) {
                 $pedido = $this->pedidoService->crearPedidoBase($datos, 'TIENDA');
                 $reserva = $pedido->reserva()->create([
-                    'dinero_dejado_a_cuenta' => $datos['dinero_dejado_a_cuenta'] ?? 0,
-                    'estado_pago'            => $datos['estado_pago'] ?? 'PENDIENTE',
+                    'dinero_pendiente' => $datos['dinero_pendiente'] ?? 0,
+                    'estado_pago'   => $datos['estado_pago'] ?? 'PENDIENTE',
                 ]);
 
                 return response()->json($reserva->load('pedido'), 201);

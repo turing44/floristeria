@@ -19,7 +19,7 @@ class ReservaFactory extends Factory
     {
 
         return [
-            'dinero_a_cuenta' => $this->faker->randomFloat(2,0,70),
+            'dinero_pendiente' => $this->faker->randomFloat(2,0,70),
             'estado_pago' => $this->faker->randomElement(['PENDIENTE', 'PAGADO']),
             'pedido_id' => Pedido::factory(),
         ];
