@@ -43,7 +43,7 @@
             display: flex;
             flex-direction: column;
             justify-content: flex-start;
-            align-items: center;
+            align-items: flex-start;
             flex: 1;
         }
 
@@ -94,7 +94,9 @@
             font-size: 50px;
         }
 
-        .textoAzul{ color: blue; }
+        .textoAzul{ 
+            color: blue; 
+        }
 
         .idReservaSuperior{
             position: fixed;
@@ -107,6 +109,12 @@
             top: 100.5mm;
             right: 3mm;
             font-size: 35px;
+        }
+        .logoEmpresa{
+            left: 5mm;
+        }
+        .logoEmpresa img{
+            width: 50mm;
         }
 
         @media print {
@@ -139,6 +147,21 @@
 
         $fechaFormateada = $pedido->fecha ? Carbon::parse($pedido->fecha)->format('d/m/Y') : ' ';
         $diaFormateado   = $pedido->fecha ? Carbon::parse($pedido->fecha)->format('d') : ' ';
+        $dineroACuenta   = $pedido->precio - $pedido->reserva->dinero_pendiente;
+
+        //buscar ruta imagen
+        $path = resource_path('images/logoPdfReservas.png'); 
+
+        if (file_exists($path)) {
+            //mirar extendion
+            $type = pathinfo($path, PATHINFO_EXTENSION);
+            //cogemos la imagen
+            $data = file_get_contents($path);
+            //lo ponemos en base64
+            $imagenBase64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
+        } else {
+            $imagenBase64 = null;
+        }
     @endphp
 
     <div class="lineasFijas"></div>
@@ -148,18 +171,25 @@
     <div>
         @for($i = 0; $i < 2; $i++)
             <div class="segmentoTicket">
-
                 <div class="bloqueCliente">
+                    <div class="logoEmpresa">
+                        @if($imagenBase64)
+                            <img src="{{ $imagenBase64 }}">
+                        @else
+                            <p>Error: No se encontró la imagen en resources/images</p>
+                        @endif
+                    </div>
+                    <div class="textoAzul">
+                        <p>{{ $fechaFormateada }}</p>
+                    </div>
                     <p>Cliente:</p>
                     <p class="textoAzul">{{ $pedido->cliente_nombre }}</p>
 
                     <p class="textoAzul">{{ $pedido->cliente_telf }}</p>
 
-                    <p>Precio Total:</p>
-                    <p class="textoAzul">{{ $pedido->precio ?? 'No definido' }}</p>
+                     <p>Hora Recogida:</p>
+                    <p class="textoAzul">{{$pedido->reserva->hora_recogida}}</p>
 
-                    <p>Dinero Pendiente:</p>
-                    <p class="textoAzul">{{ $pedido->reserva->dinero_pendiente ?? '0' }}</p>
                 </div>
 
                 <div class="bloquePedido">
@@ -177,10 +207,7 @@
                 </div>
 
                 <div class="bloqueFecha">
-                    <div class="textoAzul">
-                        <p>{{ $fechaFormateada }}</p>
-                    </div>
-
+                    
                     <div class="diaGigante">
                         <p>{{ $diaFormateado }}</p>
                     </div>
@@ -188,6 +215,10 @@
                     <div class="lineaEstado">
                         <p>{{ $pedido->reserva->estado_pago }}</p>
                     </div>
+                    
+                    <p class="textoAzul">Precio Total:{{ $pedido->precio ?? 'No definido' }}€</p>
+                    <p class="textoAzul">Dinero Pendiente:{{ $pedido->reserva->dinero_pendiente ?? '0' }}€</p>
+                    <p class="textoAzul">Dinero A Cuenta:{{ $dineroACuenta }}€</p>
                 </div>
 
             </div>
