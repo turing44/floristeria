@@ -21,6 +21,7 @@ class ReservaFactory extends Factory
         return [
             'dinero_pendiente' => $this->faker->randomFloat(2,0,70),
             'estado_pago' => $this->faker->randomElement(['PENDIENTE', 'PAGADO']),
+            'hora_recogida' => $this->faker->numberBetween(0, 23),
             'pedido_id' => Pedido::factory(),
         ];
     }

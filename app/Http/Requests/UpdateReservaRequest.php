@@ -11,6 +11,7 @@ class UpdateReservaRequest extends BasePedidoRequest
         return array_merge($comunes, [
             'dinero_dejado_a_cuenta' => 'nullable|numeric|min:0',
             'estado_pago'            => 'nullable|string|in:PAGADO,PENDIENTE',
+            'hora_recogida' => 'nullable|string|max:10',
         ]);
     }
 }
