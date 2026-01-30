@@ -218,8 +218,8 @@
         }
     @endphp
 
-    <div class="identificadorPrimeraParte">R{{$pedido->entrega->id}}</div>
-    <div class="identificadorSegundaParte">R{{$pedido->entrega->id}}</div>    
+    <div class="identificadorPrimeraParte">E{{$pedido->entrega->id}}</div>
+    <div class="identificadorSegundaParte">E{{$pedido->entrega->id}}</div>    
     <div>
         <div class="segmento">
             
