@@ -3,7 +3,7 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <style>
-        .body { background-color: red; }
+        .body { background-color: red;  margin: 0; padding: 0; }
 
         .segmentoTicket {
             display: flex;
@@ -47,20 +47,34 @@
             flex: 1;
         }
 
+        .bloqueDinero{
+            font-size: 14px;
+        }
+
         .infoPedido{
             display: flex;
             flex-direction: column;
         }
 
-        .filaDireccion, .filaProducto, .filaFuente{
+        
+
+        .filaProducto {
             display: flex;
             flex-direction: row;
+            margin-left: 20px;
         }
+
+        .observaciones {
+            display: flex;
+            flex-direction: column;
+            margin-top: 5px;
+        }
+    
 
         .cajaObservaciones{
             width: 370px;
             height: 120px;
-            border: 1px solid #ccc;
+            border: 1px solid #ffffff;
             padding: 10px;
             box-sizing: border-box;
             overflow: hidden;
@@ -72,7 +86,7 @@
         .diaGigante{
             display: flex;
             justify-content: flex-start;
-            color: rgb(206, 0, 206);
+            color: rgb(255, 0, 0);
             font-size: 75px;
         }
         .diaGigante p{ margin: 7px 0; }
@@ -80,7 +94,7 @@
         .lineaEstado{
             display: flex;
             justify-content: flex-start;
-            color: rgb(255, 0, 206);
+            color: rgb(255, 0, 0);
             font-size: 30px;
         }
         .lineaEstado p{ margin: 7px 0; }
@@ -147,10 +161,14 @@
 
         $fechaFormateada = $pedido->fecha ? Carbon::parse($pedido->fecha)->format('d/m/Y') : ' ';
         $diaFormateado   = $pedido->fecha ? Carbon::parse($pedido->fecha)->format('d') : ' ';
-        $dineroACuenta   = $pedido->precio - $pedido->reserva->dinero_pendiente;
+        $dineroACuenta = round(
+            $pedido->precio - $pedido->reserva->dinero_pendiente,
+            2
+        );
+
 
         //buscar ruta imagen
-        $path = resource_path('images/logoPdfReservas.png'); 
+        $path = resource_path('images/logoTelfGrande.png'); 
 
         if (file_exists($path)) {
             //mirar extendion
@@ -188,7 +206,7 @@
                     <p class="textoAzul">{{ $pedido->cliente_telf }}</p>
 
                      <p>Hora Recogida:</p>
-                    <p class="textoAzul">{{$pedido->reserva->hora_recogida}}</p>
+                    <p class="textoAzul">{{$pedido->reserva->hora_recogida ?? 'No especificada'}}h</p>
 
                 </div>
 
@@ -216,9 +234,15 @@
                         <p>{{ $pedido->reserva->estado_pago }}</p>
                     </div>
                     
-                    <p class="textoAzul">Precio Total:{{ $pedido->precio ?? 'No definido' }}€</p>
-                    <p class="textoAzul">Dinero Pendiente:{{ $pedido->reserva->dinero_pendiente ?? '0' }}€</p>
-                    <p class="textoAzul">Dinero A Cuenta:{{ $dineroACuenta }}€</p>
+                    <div class="bloqueDinero">
+                        <p>Precio Total: <span class="textoAzul">{{ $pedido->precio ?? '0' }} €</span></p>
+                        @if ($pedido->reserva->estado_pago === "PENDIENTE")
+                   
+                            <p>Dinero Pendiente: <span class="textoAzul">{{ $pedido->reserva->dinero_pendiente ?? '0' }} €</span></p>
+                            <p>Dinero Pagado: <span class="textoAzul">{{ $dineroACuenta }} €</span></p>
+                    
+                        @endif
+                    </div>
                 </div>
 
             </div>

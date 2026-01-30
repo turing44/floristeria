@@ -84,7 +84,7 @@
         .textarea{
             width: 370px;
             height: 90px;
-            border: 1px solid #ccc;
+            border: 1px solid #ffffff;
             padding: 10px;
             resize: none;
         }
@@ -92,14 +92,14 @@
         .fechaGigante{
             display: flex;
             justify-content: flex-start;
-            color: red;
+            color: rgb(156, 0, 161);
             font-size: 75px;
         }
         .fechaGigante p{ margin: 7px 0; }
         .horario{
             display: flex;
             justify-content: flex-start;
-            color: red;
+            color: rgb(156, 0, 161);
             font-size: 30px;
         }
         .horario p{ margin: 7px 0; }
