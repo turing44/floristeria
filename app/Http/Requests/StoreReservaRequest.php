@@ -10,7 +10,6 @@ class StoreReservaRequest extends BasePedidoRequest
 
         return array_merge($comunes, [
             'dinero_pendiente' => 'nullable|numeric|min:0|' . "max:" . ($this->input('precio') ?? 0),
-            'estado_pago'   => 'required|string|in:PAGADO,PENDIENTE',
             'hora_recogida' => 'nullable|string|max:10',
         ]);
     }
