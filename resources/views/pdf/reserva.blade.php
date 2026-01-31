@@ -221,6 +221,7 @@
                     </div>
 
                     <div class="observaciones">
+                        <br>
                         <p>Observaciones: </p>
                         <div class="cajaObservaciones textoAzul">{{ $pedido->observaciones }}</div>
                     </div>
