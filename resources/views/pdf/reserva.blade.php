@@ -166,6 +166,8 @@
             2
         );
 
+        $estadoPago = $pedido->reserva->dinero_pendiente === 0 ? "PAGADO" : "PENDIENTE";
+
 
         //buscar ruta imagen
         $path = resource_path('images/logoTelfGrande.png'); 
@@ -231,12 +233,12 @@
                     </div>
 
                     <div class="lineaEstado">
-                        <p>{{ $pedido->reserva->estado_pago }}</p>
+                        <p>{{ $estadoPago }}</p>
                     </div>
                     
                     <div class="bloqueDinero">
                         <p>Precio Total: <span class="textoAzul">{{ $pedido->precio ?? '0' }} €</span></p>
-                        @if ($pedido->reserva->estado_pago === "PENDIENTE")
+                        @if ($estadoPago === "PENDIENTE")
                    
                             <p>Dinero Pendiente: <span class="textoAzul">{{ $pedido->reserva->dinero_pendiente ?? '0' }} €</span></p>
                             <p>Dinero Pagado: <span class="textoAzul">{{ $dineroACuenta }} €</span></p>

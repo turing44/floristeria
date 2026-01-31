@@ -14,7 +14,7 @@ return new class extends Migration
             $table->foreignId('pedido_id')->constrained('pedidos')->onDelete('cascade');
             
             $table->decimal('dinero_pendiente', 5, 2)->default(0.00); 
-            $table->enum('estado_pago', ['PAGADO', 'PENDIENTE'])->default('PENDIENTE');
+            $table->string("hora_recogida")->nullable();
             
             $table->timestamps();
             $table->softDeletes();

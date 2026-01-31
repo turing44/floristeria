@@ -15,7 +15,6 @@ class Reserva extends Model
     protected $fillable = [
         'pedido_id',
         'dinero_pendiente',
-        'estado_pago',
         'hora_recogida'
     ];
 
