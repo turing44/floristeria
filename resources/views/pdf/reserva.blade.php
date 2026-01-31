@@ -241,8 +241,8 @@
                         <p>Precio Total: <span class="textoAzul">{{ $pedido->precio ?? '0' }} €</span></p>
                         @if ($estadoPago === "PENDIENTE")
                    
-                            <p>Dinero Pendiente: <span class="textoAzul">{{ $pedido->reserva->dinero_pendiente ?? '0' }} €</span></p>
-                            <p>Dinero Pagado: <span class="textoAzul">{{ $dineroACuenta }} €</span></p>
+                            <p>Dinero Pagado: <span class="textoAzul">{{ $pedido->reserva->dinero_pendiente ?? '0' }} €</span></p>
+                            <p>Dinero Pendiente: <span class="textoAzul">{{ $dineroACuenta }} €</span></p>
                     
                         @endif
                     </div>
