@@ -26,7 +26,7 @@ class BasePedidoRequest extends FormRequest
             'horario'        => 'nullable|in:MAÑANA,TARDE,INDIFERENTE',
             'observaciones'  => 'nullable|string|max:230',
             'nombre_mensaje' => 'nullable|string',
-            'texto_mensaje'  => 'nullable|string|max:255',
+            'texto_mensaje'  => 'nullable|string|max:430',
             'fuente'         => 'nullable|string',
         ];
     }
