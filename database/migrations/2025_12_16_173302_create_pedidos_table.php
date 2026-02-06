@@ -23,10 +23,10 @@ return new class extends Migration
             $table->string('cliente_nombre'); 
             $table->string('cliente_telf'); 
             
-            $table->enum('horario', ['MAÑANA', 'TARDE','INDIFERENTE'])->default('INDIFERENTE');
-            
             $table->text('observaciones')->nullable(); 
-
+            
+            // Estos 3 campos estan aqui porque da pereza moverlos a entregas
+            $table->enum('horario', ['MAÑANA', 'TARDE','INDIFERENTE'])->default('INDIFERENTE');
             $table->string('nombre_mensaje')->nullable();
             $table->text('texto_mensaje')->nullable();
             

@@ -61,7 +61,7 @@ class ReservaController extends Controller
                 $pedido = $this->pedidoService->crearPedidoBase($datos, 'TIENDA');
                 $reserva = $pedido->reserva()->create([
                     'dinero_pendiente' => $datos['dinero_pendiente'] ?? 0,
-                    'estado_pago'   => $datos['estado_pago'] ?? 'PENDIENTE',
+                    'hora_recogida' => $datos['hora_recogida'] ?? null,
                 ]);
 
                 return response()->json($reserva->load('pedido'), 201);

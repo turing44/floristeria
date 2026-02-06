@@ -22,3 +22,7 @@ Database, Storage y bootstrap/cache deben estar disponibles para el usuario www-
 
 ## Cambio en limite de desbordamiento en pdf
 App\Http\Requests\BaseRequest
+
+
+## Recuerda que para añadir un nuevo campo se debe tocar
+migración -> model -> controller -> pedidoService (si añades a pedido) -> request -> test -> pdf -> factory
