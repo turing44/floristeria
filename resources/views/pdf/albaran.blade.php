@@ -136,6 +136,7 @@
             font-family: "Lucida Calligraphy";
             flex: 1;
             min-width: 0;
+            font-size: var(--tamanioMensaje);
         }
         .nombreDestinatario{
             display: flex;
@@ -342,10 +343,10 @@
 
         <div class="segmentoMensaje">
             @if(!blank($pedido->texto_mensaje))
-                <div class="mensajeDeLado">
+                <div class="mensajeDeLado" style="--tamanioMensaje: {{ strlen($pedido->texto_mensaje) > 240 ? '80%' : '100%' }}">
                     <p>
                         {{-- FIX: Mensaje unificado en Pedido --}}
-                        "{{ $pedido->texto_mensaje ?? ' ' }}"
+                        {{ $pedido->texto_mensaje ?? ' ' }}
                     </p>
                 </div>
                 <div class="divVacio"></div>
