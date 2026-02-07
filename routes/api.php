@@ -41,7 +41,4 @@ Route::get('/reservas/pdf/{id}', [ReservaController::class, 'generarPdf']);
 Route::post('/mensaje/pdf', [MensajeController::class, 'generarPdf']);
 
 Route::post('/reservas/restaurar/{id}', [ReservaController::class, 'restaurar']);
-
-
-Route::get('/generar-link', [GoogleImportController::class, 'generarLink']);
-Route::get('/importar-pedidos', [App\Http\Controllers\GoogleImportController::class, 'importarPedidos']);
+Route::get('/link', [GoogleImportController::class, 'generarLink']);
