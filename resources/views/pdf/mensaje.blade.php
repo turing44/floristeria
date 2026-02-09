@@ -117,7 +117,6 @@
 
 <body>        
         <div class="lineasFijas"></div>
-
         <div class="segmentoMensaje">
             
             {{-- Mensaje Izquierda --}}

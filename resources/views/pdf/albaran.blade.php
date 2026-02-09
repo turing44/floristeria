@@ -354,7 +354,6 @@
                     <p>{{ $pedido->nombre_mensaje ?? " " }}</p> 
                 </div>
                 <div class="lineasFijas"></div>
-
             @endif
         </div>
     </div>
