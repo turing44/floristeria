@@ -1,13 +1,15 @@
 @php
     $path = public_path('fonts/LucidaUnicodeCalligraphy.ttf');
-    
+
     if (file_exists($path)) {
-        $type = pathinfo($path, PATHINFO_EXTENSION);
         $dataFont = file_get_contents($path);
-        $base64Font = 'data:font/' . $type . ';base64,' . base64_encode($dataFont);
+        $base64Font = 'data:font/truetype;base64,' . base64_encode($dataFont);
     } else {
-        $base64Font = ''; 
+        $base64Font = '';
     }
+
+    $texto = $data['texto_mensaje'] ?? '';
+    $len = strlen($texto);
 @endphp
 <!DOCTYPE html>
 <html>
@@ -15,6 +17,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <base href="{{ url('/') }}"> 
     <style>
+
         @font-face {
             font-family: "Lucida Calligraphy";
             src: url("{!! $base64Font !!}") format("truetype");
@@ -25,6 +28,9 @@
         @page {
             size: A4;
             margin: 0;
+        }
+        * {
+        box-sizing: border-box;
         }
 
         html, body {
@@ -42,7 +48,7 @@
             align-items: center;
             width: 100%;
             gap: 40px;
-            height: 99mm; 
+            height: 93mm; /*altura del mensaje !!!*/
             box-sizing: border-box;
             page-break-inside: avoid; 
         }
@@ -57,7 +63,7 @@
         
         .mensajeDeLado {
             display: flex;
-            height: 250px; 
+            height: 95%;
             align-items: center;
             justify-content: center;
             text-orientation: mixed;
@@ -72,12 +78,12 @@
             font-family: "Lucida Calligraphy";
             flex: 1;
             min-width: 0;
-            font-size: 16px;
+            font-size: var(--tamanioMensaje);
         }
         
         .nombreDestinatario {
             display: flex;
-            height: 200px;
+            height: 95%; 
             justify-content: center;
             align-items: center;
             writing-mode: vertical-rl;   
@@ -117,11 +123,10 @@
 
 <body>        
         <div class="lineasFijas"></div>
-
         <div class="segmentoMensaje">
             
             {{-- Mensaje Izquierda --}}
-            <div class="mensajeDeLado">
+            <div class="mensajeDeLado" style="--tamanioMensaje: {{ $len > 400 ? '70%' : ($len > 240 ? '80%' : '100%') }}">
                 <p>
                     {{ $data['texto_mensaje'] }}
                 </p>
