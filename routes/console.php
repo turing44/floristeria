@@ -10,8 +10,9 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
 
-Schedule::call(function () {
-    app(GoogleImportController::class)->importarPedidos();
-    Log::info('Importación automática de Google ejecutada.');
-    
-})->everyTwoMinutes();
+if (config('floristeria.google_habilitado')) {
+    Schedule::call(function () {
+        app(GoogleImportController::class)->importarPedidos();
+        Log::info('Importacion automatica de Google ejecutada.');
+    })->everyTwoMinutes();
+}

@@ -2,28 +2,28 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Reserva;
-use App\Services\PedidoService;
 use App\Http\Requests\StoreReservaRequest;
 use App\Http\Requests\UpdateReservaRequest;
+use App\Models\Reserva;
+use App\Pedidos\Recursos\ReservaResource;
+use App\Pedidos\Servicios\ServicioPdfPedidos;
+use App\Pedidos\Servicios\ServicioReservas;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class ReservaController extends Controller
 {
-    protected $pedidoService;
-
-    public function __construct(PedidoService $pedidoService)
-    {
-        $this->pedidoService = $pedidoService;
+    public function __construct(
+        private ServicioReservas $servicioReservas,
+        private ServicioPdfPedidos $servicioPdfs
+    ) {
     }
+
     public function index(Request $request)
     {
-        
         $query = Reserva::with('pedido')
             ->join('pedidos', 'reservas.pedido_id', '=', 'pedidos.id')
-            ->select('reservas.*'); 
+            ->select('reservas.*');
+
         if ($request->filled('telefono')) {
             $query->where('pedidos.cliente_telf', 'LIKE', '%' . $request->telefono . '%');
         }
@@ -45,141 +45,101 @@ class ReservaController extends Controller
         } else {
             $query->orderBy('pedidos.fecha', 'desc');
         }
+
+        $reservas = $query->get();
+
         return response()->json([
-            "num_reservas"   => $query->count(),
-            "num_archivadas" => Reserva::onlyTrashed()->count(),
-            "reservas"       => $query->get()
+            'data' => ReservaResource::collection($reservas)->resolve(),
+            'meta' => [
+                'total' => $reservas->count(),
+                'archivadas' => Reserva::onlyTrashed()->count(),
+            ],
         ]);
     }
 
     public function store(StoreReservaRequest $request)
     {
-        $datos = $request->validated();
+        $reserva = $this->servicioReservas->crear($request->validated());
 
-        try {
-            return DB::transaction(function () use ($datos) {
-                $pedido = $this->pedidoService->crearPedidoBase($datos, 'TIENDA');
-                $reserva = $pedido->reserva()->create([
-                    'dinero_pendiente' => $datos['dinero_pendiente'] ?? 0,
-                    'hora_recogida' => $datos['hora_recogida'] ?? null,
-                ]);
-
-                return response()->json($reserva->load('pedido'), 201);
-            });
-        } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
-        }
+        return $this->respuestaReserva($reserva, 201);
     }
 
     public function show($id)
     {
-        return Reserva::with('pedido')->findOrFail($id);
+        $reserva = Reserva::with('pedido')->findOrFail($id);
+
+        return $this->respuestaReserva($reserva);
     }
 
     public function update(UpdateReservaRequest $request, $id)
     {
         $reserva = Reserva::with('pedido')->findOrFail($id);
-        $datos = $request->validated();
+        $reserva = $this->servicioReservas->actualizar($reserva, $request->validated());
 
-        try {
-            return DB::transaction(function () use ($reserva, $datos) {
-                $this->pedidoService->actualizarPedidoBase($reserva->pedido, $datos);
-                $reserva->update($datos);
-
-                return response()->json($reserva->load('pedido'), 200);
-            });
-        } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
-        }
+        return $this->respuestaReserva($reserva);
     }
 
     public function destroy($id)
     {
-        try {
-            return DB::transaction(function () use ($id) {
-                $reserva = Reserva::findOrFail($id);
-                $reserva->pedido()->delete();
-                $reserva->delete();
-                return response()->json(null, 204);
-            });
-        } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 404);
-        }
+        $reserva = Reserva::with('pedido')->findOrFail($id);
+        $this->servicioReservas->archivar($reserva);
+
+        return response()->json(null, 204);
     }
+
     public function generarPdf(int $id)
     {
         $reserva = Reserva::withTrashed()->with('pedido')->findOrFail($id);
 
-        $html = view('pdf.reserva', ['reserva' => $reserva])->render(); 
+        try {
+            $pdf = $this->servicioPdfs->obtenerReserva($reserva);
 
-        $descriptorspec = [
-            0 => ["pipe", "r"],
-            1 => ["pipe", "w"],
-            2 => ["pipe", "w"]
-        ];
-
-        $process = proc_open('node "' . base_path('resources/js/generar_pdf.cjs') . '"', $descriptorspec, $pipes);
-
-        if (is_resource($process)) {
-            fwrite($pipes[0], $html);
-            fclose($pipes[0]);
-
-            $pdfBinary = stream_get_contents($pipes[1]);
-            fclose($pipes[1]);
-            
-            $errors = stream_get_contents($pipes[2]);
-            fclose($pipes[2]);
-
-            $status = proc_close($process);
-
-            if ($status !== 0) {
-                Log::error("Error Generando PDF: $errors");
-                return response("Error generando PDF: $errors", 500);
-            }
-
-            return response($pdfBinary)
+            return response($pdf)
                 ->header('Content-Type', 'application/pdf')
-                ->header('Content-Disposition', 'inline; filename="reserva_'.$reserva->id.'.pdf"');
+                ->header('Content-Disposition', 'inline; filename="reserva_' . $reserva->id . '.pdf"');
+        } catch (\Throwable $e) {
+            return response('Error generando PDF: ' . $e->getMessage(), 500);
         }
-
-        return response('Error iniciando Node.js', 500);
     }
-
-
 
     public function obtenerEliminadas()
     {
         $archivadas = Reserva::onlyTrashed()
-            ->with(['pedido' => fn ($p) => $p->withTrashed()])
+            ->with('pedido')
             ->orderBy('deleted_at', 'desc')
             ->get();
 
         return response()->json([
-            "num_archivadas" => $archivadas->count(),
-            "reservas"       => $archivadas
+            'data' => ReservaResource::collection($archivadas)->resolve(),
+            'meta' => [
+                'total' => $archivadas->count(),
+                'archivadas' => $archivadas->count(),
+            ],
         ]);
     }
 
     public function obtenerReservaEliminada($id)
     {
-        return Reserva::onlyTrashed()
-            ->with(['pedido' => fn ($p) => $p->withTrashed()])
+        $reserva = Reserva::onlyTrashed()
+            ->with('pedido')
             ->where('id', $id)
             ->firstOrFail();
+
+        return $this->respuestaReserva($reserva);
     }
 
-        public function restaurar($id)
+    public function restaurar($id)
     {
         $reserva = Reserva::withTrashed()->with('pedido')->findOrFail($id);
-        $reserva->restore();
+        $reserva = $this->servicioReservas->restaurar($reserva);
 
-        if ($reserva->pedido && $reserva->pedido->trashed()) {
-            $reserva->pedido->restore();
-        }
+        return $this->respuestaReserva($reserva);
+    }
 
+    private function respuestaReserva(Reserva $reserva, int $status = 200)
+    {
         return response()->json([
-            'mensaje' => 'Reserva y Pedido restaurados correctamente',
-            'reserva' => $reserva
-        ]);
-    } 
+            'data' => (new ReservaResource($reserva))->resolve(),
+        ], $status);
+    }
 }

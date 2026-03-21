@@ -2,84 +2,87 @@
 
 namespace App\Http\Requests;
 
+use App\Pedidos\Contratos\ServicioContratoPedidos;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class BasePedidoRequest extends FormRequest
+abstract class BasePedidoRequest extends FormRequest
 {
     public function authorize(): bool
     {
         return true;
     }
 
-    protected function reglasComunes(bool $isUpdate = false): array
-    {
-        $prefix = $isUpdate ? 'nullable' : 'required';
+    abstract protected function entidadContrato(): string;
 
-        return [
-            'cliente_nombre' => "$prefix|string|max:40",
-            'cliente_telf'   => "$prefix|string|max:20",
-            'precio'         => "$prefix|numeric|min:0",
-            'producto'       => "$prefix|string|max:150",
-            'fecha'          => "$prefix|date",
-            'horario'        => 'nullable|in:MAÑANA,TARDE,INDIFERENTE',
-            'observaciones'  => 'nullable|string|max:230',
-            'nombre_mensaje' => 'nullable|string',
-            'texto_mensaje'  => 'nullable|string|max:430',
-            'fuente'         => 'nullable|string',
-        ];
+    abstract protected function operacionContrato(): string;
+
+    protected function reglasDesdeContrato(): array
+    {
+        return app(ServicioContratoPedidos::class)->obtenerReglas(
+            $this->entidadContrato(),
+            $this->operacionContrato()
+        );
     }
 
     public function messages(): array
     {
         return [
             'cliente_nombre.required' => 'El nombre del cliente es obligatorio.',
-            'cliente_nombre.max'      => 'El nombre del cliente es demasiado largo (máx 255).',
-            'cliente_telf.required'   => 'El teléfono es obligatorio.',
-            'cliente_telf.max'        => 'El teléfono es demasiado largo.',
-            
-            'precio.required'         => 'El precio es obligatorio.',
-            'precio.numeric'          => 'El precio debe ser un número.',
-            'precio.min'              => 'El precio no puede ser negativo.',
-            
-            'producto.required'       => 'Debes especificar el producto.',
-            'fecha.required'          => 'La fecha es obligatoria.',
-            'fecha.date'              => 'La fecha no es válida.',
-            
-            'horario.in'              => 'El horario debe ser: MAÑANA, TARDE o INDIFERENTE.',
-            'estado_pago.in'          => 'El estado de pago solo puede ser: PAGADO o PENDIENTE.',
-            
-            'direccion.required'      => 'La dirección es obligatoria para envíos.',
-            'codigo_postal.required'  => 'El código postal es obligatorio.',
+            'cliente_nombre.max' => 'El nombre del cliente no puede superar los 40 caracteres.',
+            'cliente_telf.required' => 'El telefono del cliente es obligatorio.',
+            'cliente_telf.max' => 'El telefono del cliente es demasiado largo.',
+            'precio.required' => 'El precio es obligatorio.',
+            'precio.numeric' => 'El precio debe ser un numero.',
+            'precio.min' => 'El precio no puede ser negativo.',
+            'producto.required' => 'Debes especificar el producto.',
+            'producto.max' => 'El producto no puede superar los 150 caracteres.',
+            'fecha.required' => 'La fecha es obligatoria.',
+            'fecha.date' => 'La fecha no es valida.',
+            'horario.in' => 'El horario debe ser MAÑANA, TARDE o INDIFERENTE.',
+            'nombre_mensaje.regex' => 'El destinatario puede tener como maximo 5 palabras y cada una no puede superar los 12 caracteres.',
+            'texto_mensaje.max' => 'El mensaje no puede superar los 430 caracteres.',
+            'direccion.required' => 'La direccion es obligatoria para envios.',
+            'codigo_postal.required' => 'El codigo postal es obligatorio.',
             'destinatario_telf.required' => 'El teléfono del destinatario es obligatorio.',
+            'hora_recogida.integer' => 'La hora de recogida debe ser un numero entero.',
+            'hora_recogida.min' => 'La hora de recogida no puede ser menor de 0.',
+            'hora_recogida.max' => 'La hora de recogida no puede ser mayor de 23.',
         ];
+    }
+
+    protected function prepareForValidation(): void
+    {
+        if ($this->input('horario') === 'MANANA') {
+            $this->merge(['horario' => 'MAÑANA']);
+        }
     }
 
     protected function withValidator($validator)
     {
         $validator->after(function ($validator) {
-            $texto = $this->input('nombre_mensaje');
+            foreach ($this->camposContrato() as $campo) {
+                $restricciones = $campo['restricciones'] ?? [];
 
-            if (!$texto) return;
+                if (!isset($restricciones['maximoCampo'])) {
+                    continue;
+                }
 
-            $palabras = preg_split('/\s+/', trim($texto));
+                $clave = $campo['clave'];
+                $campoLimite = $restricciones['maximoCampo'];
+                $valor = $this->input($clave);
+                $limite = $this->input($campoLimite);
 
-            if (count($palabras) > 5) {
-                $validator->errors()->add(
-                    'nombre_mensaje',
-                    'El destinatario no puede tener más de 5 palabras.'
-                );
-                return;
-            }
+                if ($valor === null || $valor === '' || $limite === null || $limite === '') {
+                    continue;
+                }
 
-            foreach ($palabras as $palabra) {
-                if (mb_strlen($palabra) > 12) {
+                if ((float) $valor > (float) $limite) {
                     $validator->errors()->add(
-                        'nombre_mensaje',
-                        'Cada palabra del mensaje no puede superar los 12 caracteres.'
+                        $clave,
+                        'El valor no puede ser mayor que ' . $campoLimite . '.'
                     );
-                    return;
                 }
             }
         });
@@ -92,5 +95,10 @@ class BasePedidoRequest extends FormRequest
             'message' => 'Errores de validación.',
             'errors'  => $validator->errors()
         ], 422));
+    }
+
+    protected function camposContrato(): array
+    {
+        return app(ServicioContratoPedidos::class)->obtenerCampos($this->entidadContrato());
     }
 }

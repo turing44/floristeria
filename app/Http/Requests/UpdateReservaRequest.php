@@ -4,13 +4,18 @@ namespace App\Http\Requests;
 
 class UpdateReservaRequest extends BasePedidoRequest
 {
+    protected function entidadContrato(): string
+    {
+        return 'reserva';
+    }
+
+    protected function operacionContrato(): string
+    {
+        return 'actualizar';
+    }
+
     public function rules(): array
     {
-        $comunes = $this->reglasComunes(isUpdate: true);
-
-        return array_merge($comunes, [
-            'dinero_pendiente' => 'nullable|numeric|min:0',
-            'hora_recogida' => 'nullable|string|max:10',
-        ]);
+        return $this->reglasDesdeContrato();
     }
 }

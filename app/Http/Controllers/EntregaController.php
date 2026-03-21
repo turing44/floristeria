@@ -2,24 +2,23 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Entrega;
-use App\Services\PedidoService;
 use App\Http\Requests\StoreEntregaRequest;
 use App\Http\Requests\UpdateEntregaRequest;
+use App\Models\Entrega;
+use App\Pedidos\Recursos\EntregaResource;
+use App\Pedidos\Servicios\ServicioEntregas;
+use App\Pedidos\Servicios\ServicioPdfPedidos;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class EntregaController extends Controller
 {
-    protected $pedidoService;
-
-    public function __construct(PedidoService $pedidoService)
-    {
-        $this->pedidoService = $pedidoService;
+    public function __construct(
+        private ServicioEntregas $servicioEntregas,
+        private ServicioPdfPedidos $servicioPdfs
+    ) {
     }
 
-public function index(Request $request)
+    public function index(Request $request)
     {
         $query = Entrega::with('pedido')
             ->join('pedidos', 'entregas.pedido_id', '=', 'pedidos.id')
@@ -55,143 +54,101 @@ public function index(Request $request)
         } else {
             $query->orderBy('pedidos.fecha', 'desc');
         }
+
+        $entregas = $query->get();
+
         return response()->json([
-            "num_entregas"   => $query->count(),
-            "num_archivadas" => Entrega::onlyTrashed()->count(),
-            "entregas"       => $query->get()
+            'data' => EntregaResource::collection($entregas)->resolve(),
+            'meta' => [
+                'total' => $entregas->count(),
+                'archivadas' => Entrega::onlyTrashed()->count(),
+            ],
         ]);
     }
 
     public function store(StoreEntregaRequest $request)
     {
-        $datos = $request->validated();
+        $entrega = $this->servicioEntregas->crear($request->validated());
 
-        try {
-            return DB::transaction(function () use ($datos) {
-                $pedido = $this->pedidoService->crearPedidoBase($datos, 'DOMICILIO');
-
-                $entrega = $pedido->entrega()->create([
-                    'direccion'         => $datos['direccion'],
-                    'codigo_postal'     => $datos['codigo_postal'],
-                    'destinatario_telf' => $datos['destinatario_telf'],
-                ]);
-
-                return response()->json($entrega->load('pedido'), 201);
-            });
-        } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
-        }
+        return $this->respuestaEntrega($entrega, 201);
     }
 
     public function show($id)
     {
-        return Entrega::with('pedido')->findOrFail($id);
+        $entrega = Entrega::with('pedido')->findOrFail($id);
+
+        return $this->respuestaEntrega($entrega);
     }
 
     public function update(UpdateEntregaRequest $request, $id)
     {
         $entrega = Entrega::with('pedido')->findOrFail($id);
-        $datos = $request->validated();
+        $entrega = $this->servicioEntregas->actualizar($entrega, $request->validated());
 
-        try {
-            return DB::transaction(function () use ($entrega, $datos) {
-                $this->pedidoService->actualizarPedidoBase($entrega->pedido, $datos);
-                $entrega->update($datos);
-
-                return response()->json($entrega->load('pedido'), 200);
-            });
-        } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
-        }
+        return $this->respuestaEntrega($entrega);
     }
 
     public function destroy($id)
     {
-        try {
-            return DB::transaction(function () use ($id) {
-                $entrega = Entrega::findOrFail($id);
-                $entrega->pedido()->delete(); 
-                $entrega->delete();      
-                return response()->json(null, 204);
-            });
-        } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 404);
-        }
+        $entrega = Entrega::with('pedido')->findOrFail($id);
+        $this->servicioEntregas->archivar($entrega);
+
+        return response()->json(null, 204);
     }
-    
+
     public function generarPdf(int $id)
     {
-        $entrega = Entrega::withTrashed()->with('pedido')->findOrFail($id);   
+        $entrega = Entrega::withTrashed()->with('pedido')->findOrFail($id);
 
-        $html = view('pdf.albaran', compact('entrega'))->render(); 
+        try {
+            $pdf = $this->servicioPdfs->obtenerEntrega($entrega);
 
-        $descriptorspec = [
-            0 => ["pipe", "r"],
-            1 => ["pipe", "w"],
-            2 => ["pipe", "w"]
-        ];
-
-        $process = proc_open('node "' . base_path('resources/js/generar_pdf.cjs') . '"', $descriptorspec, $pipes);
-
-        if (is_resource($process)) {
-            fwrite($pipes[0], $html);
-            fclose($pipes[0]);
-
-            $pdfBinary = stream_get_contents($pipes[1]);
-            fclose($pipes[1]);
-            
-            $errors = stream_get_contents($pipes[2]);
-            fclose($pipes[2]);
-
-            $status = proc_close($process);
-
-            if ($status !== 0) {
-                Log::error("Error Generando PDF: $errors");
-                return response("Error generando PDF: $errors", 500);
-            }
-
-            return response($pdfBinary)
+            return response($pdf)
                 ->header('Content-Type', 'application/pdf')
-                ->header('Content-Disposition', 'inline; filename="entrega_'.$entrega->id.'.pdf"');
+                ->header('Content-Disposition', 'inline; filename="entrega_' . $entrega->id . '.pdf"');
+        } catch (\Throwable $e) {
+            return response('Error generando PDF: ' . $e->getMessage(), 500);
         }
-
-        return response('Error iniciando Node.js', 500);
     }
-
 
     public function obtenerEliminadas()
     {
         $archivadas = Entrega::onlyTrashed()
-            ->with(['pedido' => fn ($p) => $p->withTrashed()])
+            ->with('pedido')
             ->orderBy('deleted_at', 'desc')
             ->get();
 
         return response()->json([
-            "num_archivadas" => $archivadas->count(),
-            "entregas"       => $archivadas
+            'data' => EntregaResource::collection($archivadas)->resolve(),
+            'meta' => [
+                'total' => $archivadas->count(),
+                'archivadas' => $archivadas->count(),
+            ],
         ]);
     }
 
     public function obtenerEntregaEliminada($id)
     {
-        return Entrega::onlyTrashed()
-            ->with(['pedido' => fn ($p) => $p->withTrashed()])
+        $entrega = Entrega::onlyTrashed()
+            ->with('pedido')
             ->where('id', $id)
             ->firstOrFail();
+
+        return $this->respuestaEntrega($entrega);
     }
 
     public function restaurar($id)
     {
         $entrega = Entrega::withTrashed()->with('pedido')->findOrFail($id);
-        $entrega->restore();
+        $entrega = $this->servicioEntregas->restaurar($entrega);
 
-        if ($entrega->pedido && $entrega->pedido->trashed()) {
-            $entrega->pedido->restore();
-        }
+        return $this->respuestaEntrega($entrega);
+    }
 
+    private function respuestaEntrega(Entrega $entrega, int $status = 200)
+    {
         return response()->json([
-            'mensaje' => 'Entrega y Pedido restaurados correctamente',
-            'entrega' => $entrega
-        ]);
+            'data' => (new EntregaResource($entrega))->resolve(),
+        ], $status);
     }
 }

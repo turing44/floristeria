@@ -2,17 +2,18 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ContratoPedidoController;
 use App\Http\Controllers\EntregaController;
-use App\Http\Controllers\ReservaController;
-use App\Http\Controllers\MensajeController;
 use App\Http\Controllers\GoogleImportController;
-
+use App\Http\Controllers\MensajeController;
+use App\Http\Controllers\ReservaController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
-
+Route::get('/contratos/entregas', [ContratoPedidoController::class, 'entrega']);
+Route::get('/contratos/reservas', [ContratoPedidoController::class, 'reserva']);
 
 Route::get("/entregas", [EntregaController::class, "index"]);
 Route::post("/entregas", [EntregaController::class, "store"]);
@@ -42,6 +43,7 @@ Route::post('/mensaje/pdf', [MensajeController::class, 'generarPdf']);
 
 Route::post('/reservas/restaurar/{id}', [ReservaController::class, 'restaurar']);
 
-
-Route::get('/generar-link', [GoogleImportController::class, 'generarLink']);
-Route::get('/importar-pedidos', [App\Http\Controllers\GoogleImportController::class, 'importarPedidos']);
+if (config('floristeria.google_habilitado')) {
+    Route::get('/generar-link', [GoogleImportController::class, 'generarLink']);
+    Route::get('/importar-pedidos', [GoogleImportController::class, 'importarPedidos']);
+}
