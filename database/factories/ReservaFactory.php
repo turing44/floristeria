@@ -10,19 +10,12 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class ReservaFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
     public function definition(): array
     {
-
         return [
-            'dinero_pendiente' => $this->faker->randomFloat(2,0,70),
-            'estado_pago' => $this->faker->randomElement(['PENDIENTE', 'PAGADO']),
-            'hora_recogida' => $this->faker->numberBetween(0, 23),
-            'pedido_id' => Pedido::factory(),
+            'pedido_id' => Pedido::factory()->paraReserva(),
+            'dinero_pendiente' => $this->faker->randomFloat(2, 0, 70),
+            'hora_recogida' => $this->faker->optional()->numberBetween(9, 20),
         ];
     }
 }

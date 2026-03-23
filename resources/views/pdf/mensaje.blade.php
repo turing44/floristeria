@@ -8,7 +8,7 @@
         $base64Font = '';
     }
 
-    $texto = $data['texto_mensaje'] ?? '';
+    $texto = $data['mensaje_tarjeta'] ?? '';
     $len = strlen($texto);
 @endphp
 <!DOCTYPE html>
@@ -128,7 +128,7 @@
             {{-- Mensaje Izquierda --}}
             <div class="mensajeDeLado" style="--tamanioMensaje: {{ $len > 400 ? '70%' : ($len > 240 ? '80%' : '100%') }}">
                 <p>
-                    {{ $data['texto_mensaje'] }}
+                    {{ $data['mensaje_tarjeta'] }}
                 </p>
             </div>
             
@@ -137,7 +137,7 @@
             
             {{-- Nombre Derecha --}}
             <div class="nombreDestinatario">
-                <p>{{ $data['nombre_mensaje'] ?? '' }}</p> 
+                <p>{{ $data['nombre_destinatario'] ?? '' }}</p> 
             </div>
             
         </div>

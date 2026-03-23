@@ -2,6 +2,7 @@
 
 namespace App\Pedidos\Contratos;
 
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Database\Eloquent\Model;
 
 class ServicioContratoPedidos
@@ -55,9 +56,69 @@ class ServicioContratoPedidos
         return $reglas;
     }
 
+    public function obtenerMensajes(string $entidad): array
+    {
+        $mensajes = [];
+
+        foreach ($this->obtenerCampos($entidad) as $campo) {
+            $mensajes = array_merge($mensajes, $campo['mensajes'] ?? []);
+        }
+
+        return $mensajes;
+    }
+
     public function obtenerCampos(string $entidad): array
     {
         return $this->definiciones->obtener($entidad);
+    }
+
+    public function normalizarEntrada(string $entidad, array $datos): array
+    {
+        foreach ($this->obtenerCampos($entidad) as $campo) {
+            $clave = $campo['clave'];
+            $normalizar = $campo['restricciones']['normalizar'] ?? null;
+
+            if (!isset($datos[$clave]) || !is_array($normalizar)) {
+                continue;
+            }
+
+            $datos[$clave] = $normalizar[$datos[$clave]] ?? $datos[$clave];
+        }
+
+        return $datos;
+    }
+
+    public function aplicarValidacionesAdicionales(
+        string $entidad,
+        Validator $validator,
+        array $datos
+    ): void {
+        $validator->after(function ($validator) use ($entidad, $datos) {
+            foreach ($this->obtenerCampos($entidad) as $campo) {
+                $restricciones = $campo['restricciones'] ?? [];
+
+                if (!isset($restricciones['maximoCampo'])) {
+                    continue;
+                }
+
+                $clave = $campo['clave'];
+                $campoLimite = $restricciones['maximoCampo'];
+                $valor = $datos[$clave] ?? null;
+                $limite = $datos[$campoLimite] ?? null;
+
+                if ($valor === null || $valor === '' || $limite === null || $limite === '') {
+                    continue;
+                }
+
+                if ((float) $valor > (float) $limite) {
+                    $validator->errors()->add(
+                        $clave,
+                        $restricciones['mensajeMaximoCampo']
+                            ?? 'El valor no puede ser mayor que ' . $campoLimite . '.'
+                    );
+                }
+            }
+        });
     }
 
     public function separarDatos(string $entidad, array $datos): array

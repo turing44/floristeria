@@ -15,7 +15,12 @@ class Reserva extends Model
     protected $fillable = [
         'pedido_id',
         'dinero_pendiente',
-        'hora_recogida'
+        'hora_recogida',
+    ];
+
+    protected $casts = [
+        'hora_recogida' => 'integer',
+        'dinero_pendiente' => 'decimal:2',
     ];
 
     public function pedido()

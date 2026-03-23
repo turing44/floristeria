@@ -13,9 +13,4 @@ class UpdateEntregaRequest extends BasePedidoRequest
     {
         return 'actualizar';
     }
-
-    public function rules(): array
-    {
-        return $this->reglasDesdeContrato();
-    }
 }

@@ -7,6 +7,7 @@ use App\Http\Requests\UpdateEntregaRequest;
 use App\Models\Entrega;
 use App\Pedidos\Recursos\EntregaResource;
 use App\Pedidos\Servicios\ServicioEntregas;
+use App\Pedidos\Servicios\ServicioListadoPedidos;
 use App\Pedidos\Servicios\ServicioPdfPedidos;
 use Illuminate\Http\Request;
 
@@ -14,56 +15,16 @@ class EntregaController extends Controller
 {
     public function __construct(
         private ServicioEntregas $servicioEntregas,
+        private ServicioListadoPedidos $servicioListados,
         private ServicioPdfPedidos $servicioPdfs
     ) {
     }
 
     public function index(Request $request)
     {
-        $query = Entrega::with('pedido')
-            ->join('pedidos', 'entregas.pedido_id', '=', 'pedidos.id')
-            ->select('entregas.*');
-
-        if ($request->filled('codigo_postal')) {
-            $query->where('entregas.codigo_postal', 'LIKE', '%' . $request->codigo_postal . '%');
-        }
-
-        if ($request->filled('telefono')) {
-            $telf = $request->telefono;
-            $query->where(function($q) use ($telf) {
-                $q->where('pedidos.cliente_telf', 'LIKE', '%' . $telf . '%')
-                  ->orWhere('entregas.destinatario_telf', 'LIKE', '%' . $telf . '%');
-            });
-        }
-
-        if ($request->has('ordenar')) {
-            switch ($request->input('ordenar')) {
-                case 'cp':
-                    $query->orderBy('entregas.codigo_postal', 'asc');
-                    break;
-                case 'fecha_asc':
-                    $query->orderBy('pedidos.fecha', 'asc');
-                    break;
-                case 'fecha_desc':
-                    $query->orderBy('pedidos.fecha', 'desc');
-                    break;
-                default:
-                    $query->orderBy('pedidos.fecha', 'desc');
-                    break;
-            }
-        } else {
-            $query->orderBy('pedidos.fecha', 'desc');
-        }
-
-        $entregas = $query->get();
-
-        return response()->json([
-            'data' => EntregaResource::collection($entregas)->resolve(),
-            'meta' => [
-                'total' => $entregas->count(),
-                'archivadas' => Entrega::onlyTrashed()->count(),
-            ],
-        ]);
+        return $this->respuestaListado(
+            $this->servicioListados->listarEntregas($request->all())
+        );
     }
 
     public function store(StoreEntregaRequest $request)
@@ -111,20 +72,13 @@ class EntregaController extends Controller
         }
     }
 
-    public function obtenerEliminadas()
+    public function obtenerEliminadas(Request $request)
     {
-        $archivadas = Entrega::onlyTrashed()
-            ->with('pedido')
-            ->orderBy('deleted_at', 'desc')
-            ->get();
-
-        return response()->json([
-            'data' => EntregaResource::collection($archivadas)->resolve(),
-            'meta' => [
-                'total' => $archivadas->count(),
-                'archivadas' => $archivadas->count(),
-            ],
-        ]);
+        return $this->respuestaListado(
+            $this->servicioListados->listarEntregas(array_merge($request->all(), [
+                'archivados' => true,
+            ]))
+        );
     }
 
     public function obtenerEntregaEliminada($id)
@@ -150,5 +104,13 @@ class EntregaController extends Controller
         return response()->json([
             'data' => (new EntregaResource($entrega))->resolve(),
         ], $status);
+    }
+
+    private function respuestaListado(array $resultado)
+    {
+        return response()->json([
+            'data' => EntregaResource::collection($resultado['registros'])->resolve(),
+            'meta' => $resultado['meta'],
+        ]);
     }
 }

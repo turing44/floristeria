@@ -13,9 +13,4 @@ class StoreEntregaRequest extends BasePedidoRequest
     {
         return 'crear';
     }
-
-    public function rules(): array
-    {
-        return $this->reglasDesdeContrato();
-    }
 }

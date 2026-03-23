@@ -6,6 +6,7 @@ use App\Http\Requests\StoreReservaRequest;
 use App\Http\Requests\UpdateReservaRequest;
 use App\Models\Reserva;
 use App\Pedidos\Recursos\ReservaResource;
+use App\Pedidos\Servicios\ServicioListadoPedidos;
 use App\Pedidos\Servicios\ServicioPdfPedidos;
 use App\Pedidos\Servicios\ServicioReservas;
 use Illuminate\Http\Request;
@@ -14,47 +15,16 @@ class ReservaController extends Controller
 {
     public function __construct(
         private ServicioReservas $servicioReservas,
+        private ServicioListadoPedidos $servicioListados,
         private ServicioPdfPedidos $servicioPdfs
     ) {
     }
 
     public function index(Request $request)
     {
-        $query = Reserva::with('pedido')
-            ->join('pedidos', 'reservas.pedido_id', '=', 'pedidos.id')
-            ->select('reservas.*');
-
-        if ($request->filled('telefono')) {
-            $query->where('pedidos.cliente_telf', 'LIKE', '%' . $request->telefono . '%');
-        }
-
-        if ($request->has('ordenar')) {
-            switch ($request->input('ordenar')) {
-                case 'fecha_asc':
-                    $query->orderBy('pedidos.fecha', 'asc');
-                    break;
-                    
-                case 'fecha_desc':
-                    $query->orderBy('pedidos.fecha', 'desc');
-                    break;
-                    
-                default:
-                    $query->orderBy('pedidos.fecha', 'desc');
-                    break;
-            }
-        } else {
-            $query->orderBy('pedidos.fecha', 'desc');
-        }
-
-        $reservas = $query->get();
-
-        return response()->json([
-            'data' => ReservaResource::collection($reservas)->resolve(),
-            'meta' => [
-                'total' => $reservas->count(),
-                'archivadas' => Reserva::onlyTrashed()->count(),
-            ],
-        ]);
+        return $this->respuestaListado(
+            $this->servicioListados->listarReservas($request->all())
+        );
     }
 
     public function store(StoreReservaRequest $request)
@@ -102,20 +72,13 @@ class ReservaController extends Controller
         }
     }
 
-    public function obtenerEliminadas()
+    public function obtenerEliminadas(Request $request)
     {
-        $archivadas = Reserva::onlyTrashed()
-            ->with('pedido')
-            ->orderBy('deleted_at', 'desc')
-            ->get();
-
-        return response()->json([
-            'data' => ReservaResource::collection($archivadas)->resolve(),
-            'meta' => [
-                'total' => $archivadas->count(),
-                'archivadas' => $archivadas->count(),
-            ],
-        ]);
+        return $this->respuestaListado(
+            $this->servicioListados->listarReservas(array_merge($request->all(), [
+                'archivados' => true,
+            ]))
+        );
     }
 
     public function obtenerReservaEliminada($id)
@@ -141,5 +104,13 @@ class ReservaController extends Controller
         return response()->json([
             'data' => (new ReservaResource($reserva))->resolve(),
         ], $status);
+    }
+
+    private function respuestaListado(array $resultado)
+    {
+        return response()->json([
+            'data' => ReservaResource::collection($resultado['registros'])->resolve(),
+            'meta' => $resultado['meta'],
+        ]);
     }
 }

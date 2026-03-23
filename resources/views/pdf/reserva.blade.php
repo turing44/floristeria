@@ -161,7 +161,7 @@
 
         $fechaFormateada = $pedido->fecha ? Carbon::parse($pedido->fecha)->format('d/m/Y') : ' ';
         $diaFormateado   = $pedido->fecha ? Carbon::parse($pedido->fecha)->format('d') : ' ';
-        $dineroACuenta = round(
+        $dineroPagado = round(
             $pedido->precio - $pedido->reserva->dinero_pendiente,
             2
         );
@@ -203,9 +203,9 @@
                         <p>{{ $fechaFormateada }}</p>
                     </div>
                     <p>Cliente:</p>
-                    <p class="textoAzul">{{ $pedido->cliente_nombre }}</p>
+                    <p class="textoAzul">{{ $pedido->nombre_cliente }}</p>
 
-                    <p class="textoAzul">{{ $pedido->cliente_telf }}</p>
+                    <p class="textoAzul">{{ $pedido->telefono_cliente }}</p>
 
                      <p>Hora Recogida:</p>
                     <p class="textoAzul">{{$pedido->reserva->hora_recogida ?? 'No especificada'}}h</p>
@@ -241,8 +241,8 @@
                         <p>Precio Total: <span class="textoAzul">{{ $pedido->precio ?? '0' }} €</span></p>
                         @if ($estadoPago === "PENDIENTE")
                    
-                            <p>Dinero Pagado: <span class="textoAzul">{{ $pedido->reserva->dinero_pendiente ?? '0' }} €</span></p>
-                            <p>Dinero Pendiente: <span class="textoAzul">{{ $dineroACuenta }} €</span></p>
+                            <p>Dinero Pagado: <span class="textoAzul">{{ $dineroPagado }} €</span></p>
+                            <p>Dinero Pendiente: <span class="textoAzul">{{ $pedido->reserva->dinero_pendiente ?? '0' }} €</span></p>
                     
                         @endif
                     </div>
@@ -253,4 +253,3 @@
     </div>
 </body>
 </html>
-

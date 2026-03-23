@@ -13,9 +13,4 @@ class UpdateReservaRequest extends BasePedidoRequest
     {
         return 'actualizar';
     }
-
-    public function rules(): array
-    {
-        return $this->reglasDesdeContrato();
-    }
 }

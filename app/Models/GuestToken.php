@@ -2,24 +2,27 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class GuestToken extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
-        'token', 
-        'tipo', 
-        'is_used', 
-        'fecha_exp'
+        'token',
+        'tipo',
+        'is_used',
+        'fecha_exp',
     ];
 
     protected $casts = [
-        'fecha_exp' => 'datetime', 
+        'fecha_exp' => 'datetime',
         'is_used' => 'boolean',
     ];
-    
-    public function isValid() {
-        
+
+    public function isValid(): bool
+    {
         return !$this->is_used && $this->fecha_exp->isFuture();
     }
 }

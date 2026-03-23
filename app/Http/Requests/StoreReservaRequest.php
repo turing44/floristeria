@@ -13,18 +13,4 @@ class StoreReservaRequest extends BasePedidoRequest
     {
         return 'crear';
     }
-
-    public function rules(): array
-    {
-        return $this->reglasDesdeContrato();
-    }
-
-    public function messages(): array
-    {
-        return array_merge(parent::messages(), [
-            'dinero_pendiente.max' => 'El dinero pendiente no puede ser mayor que el precio total del pedido.',
-            'dinero_pendiente.numeric' => 'El dinero pendiente debe ser un numero.',
-            'dinero_pendiente.min' => 'El dinero pendiente no puede ser negativo.',
-        ]);
-    }
 }

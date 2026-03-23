@@ -226,14 +226,14 @@
             
             <div class="bloqueContacto">
                 <p>Destinatario:</p>
-                <p id="colorAzul">{{ $pedido->nombre_mensaje ?? 'Recogida Tienda' }}</p>
+                <p id="colorAzul">{{ $pedido->nombre_destinatario ?? 'Recogida Tienda' }}</p>
                 
-                <p id="colorAzul">{{ $pedido->entrega->destinatario_telf ?? '-' }}</p>
+                <p id="colorAzul">{{ $pedido->entrega->telefono_destinatario ?? '-' }}</p>
                 
                 <p>Cliente:</p>
-                <p id="colorAzul">{{ $pedido->cliente_nombre }}</p>
+                <p id="colorAzul">{{ $pedido->nombre_cliente }}</p>
                 
-                <p id="colorAzul">{{ $pedido->cliente_telf }}</p>
+                <p id="colorAzul">{{ $pedido->telefono_cliente }}</p>
             </div>
             
             <div class="idPedido">
@@ -285,14 +285,14 @@
             
             <div class="bloqueContacto">
                 <p>Destinatario:</p>
-                <p id="colorAzul">{{ $pedido->nombre_mensaje ?? '#' }}</p>
+                <p id="colorAzul">{{ $pedido->nombre_destinatario ?? '#' }}</p>
                 
-                <p id="colorAzul">{{ $pedido->entrega->destinatario_telf ?? '#' }}</p>
+                <p id="colorAzul">{{ $pedido->entrega->telefono_destinatario ?? '#' }}</p>
                 
                 <p>Cliente:</p>
-                <p id="colorAzul">{{ $pedido->cliente_nombre }}</p>
+                <p id="colorAzul">{{ $pedido->nombre_cliente }}</p>
                 
-                <p id="colorAzul">{{ $pedido->cliente_telf }}</p>
+                <p id="colorAzul">{{ $pedido->telefono_cliente }}</p>
             </div>
             
             <div class="idPedido">
@@ -342,16 +342,16 @@
         </div>
 
         <div class="segmentoMensaje">
-            @if(!blank($pedido->texto_mensaje))
-                <div class="mensajeDeLado" style="--tamanioMensaje: {{ strlen($pedido->texto_mensaje) > 240 ? '80%' : '100%' }}">
+            @if(!blank($pedido->mensaje_tarjeta))
+                <div class="mensajeDeLado" style="--tamanioMensaje: {{ strlen($pedido->mensaje_tarjeta) > 240 ? '80%' : '100%' }}">
                     <p>
                         {{-- FIX: Mensaje unificado en Pedido --}}
-                        {{ $pedido->texto_mensaje ?? ' ' }}
+                        {{ $pedido->mensaje_tarjeta ?? ' ' }}
                     </p>
                 </div>
                 <div class="divVacio"></div>
                 <div class="nombreDestinatario">
-                    <p>{{ $pedido->nombre_mensaje ?? " " }}</p> 
+                    <p>{{ $pedido->nombre_destinatario ?? " " }}</p> 
                 </div>
                 <div class="lineasFijas"></div>
 

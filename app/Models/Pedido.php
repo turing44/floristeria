@@ -11,19 +11,24 @@ class Pedido extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'user_id',   
+        'user_id',
         'guest_token_id',
-        'tipo_pedido',    
+        'tipo_pedido',
         'fuente',
-        'producto',    
+        'nombre_cliente',
+        'telefono_cliente',
+        'producto',
         'precio',
         'fecha',
-        'cliente_nombre',
-        'cliente_telf',
         'horario',
         'observaciones',
-        'nombre_mensaje',
-        'texto_mensaje',
+        'nombre_destinatario',
+        'mensaje_tarjeta',
+    ];
+
+    protected $casts = [
+        'fecha' => 'date',
+        'precio' => 'decimal:2',
     ];
 
     public function user()
@@ -34,11 +39,6 @@ class Pedido extends Model
     public function guestToken()
     {
         return $this->belongsTo(GuestToken::class);
-    }
-
-    public function pagos()
-    {
-        return $this->hasMany(Pago::class);
     }
 
     public function entrega()

@@ -15,8 +15,8 @@ class MensajeController extends Controller
     public function generarPdf(Request $request)
     {
         $datos = $request->validate([
-            'texto_mensaje'  => 'required|string|max:5000',
-            'nombre_mensaje' => 'required|string|max:255',
+            'mensaje_tarjeta' => 'required|string|max:5000',
+            'nombre_destinatario' => 'required|string|max:255',
         ]);
 
         try {

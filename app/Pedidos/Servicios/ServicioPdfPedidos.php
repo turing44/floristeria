@@ -4,15 +4,24 @@ namespace App\Pedidos\Servicios;
 
 use App\Models\Entrega;
 use App\Models\Reserva;
+use App\Pedidos\Servicios\Pdf\AlmacenPdfPedidos;
+use App\Pedidos\Servicios\Pdf\EjecutorPlaywrightPdf;
+use App\Pedidos\Servicios\Pdf\RenderizadorHtmlPdfPedidos;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
 
 class ServicioPdfPedidos
 {
+    public function __construct(
+        private RenderizadorHtmlPdfPedidos $renderizador,
+        private EjecutorPlaywrightPdf $ejecutor,
+        private AlmacenPdfPedidos $almacen
+    ) {
+    }
+
     public function obtenerEntrega(Entrega $entrega): string
     {
         return $this->obtenerOGuardar(
-            $this->rutaEntrega($entrega->id),
+            $this->almacen->rutaEntrega($entrega->id),
             fn () => $this->generarEntrega($entrega)
         );
     }
@@ -20,7 +29,7 @@ class ServicioPdfPedidos
     public function obtenerReserva(Reserva $reserva): string
     {
         return $this->obtenerOGuardar(
-            $this->rutaReserva($reserva->id),
+            $this->almacen->rutaReserva($reserva->id),
             fn () => $this->generarReserva($reserva)
         );
     }
@@ -29,7 +38,7 @@ class ServicioPdfPedidos
     {
         $this->guardarSinRomper(
             fn () => $this->guardar(
-                $this->rutaEntrega($entrega->id),
+                $this->almacen->rutaEntrega($entrega->id),
                 fn () => $this->generarEntrega($entrega)
             ),
             'No se pudo guardar el PDF de la entrega.'
@@ -40,7 +49,7 @@ class ServicioPdfPedidos
     {
         $this->guardarSinRomper(
             fn () => $this->guardar(
-                $this->rutaReserva($reserva->id),
+                $this->almacen->rutaReserva($reserva->id),
                 fn () => $this->generarReserva($reserva)
             ),
             'No se pudo guardar el PDF de la reserva.'
@@ -49,17 +58,15 @@ class ServicioPdfPedidos
 
     public function generarMensaje(array $datos): string
     {
-        $html = view('pdf.mensaje', compact('datos'))->render();
-
-        return $this->generarDesdeHtml($html);
+        return $this->ejecutor->generar($this->renderizador->renderizarMensaje($datos));
     }
 
     private function obtenerOGuardar(string $ruta, callable $generador): string
     {
-        $disk = Storage::disk($this->disk());
+        $existente = $this->almacen->obtenerSiExiste($ruta);
 
-        if ($disk->exists($ruta)) {
-            return $disk->get($ruta);
+        if ($existente !== null) {
+            return $existente;
         }
 
         return $this->guardar($ruta, $generador);
@@ -68,9 +75,8 @@ class ServicioPdfPedidos
     private function guardar(string $ruta, callable $generador): string
     {
         $contenido = $generador();
-        Storage::disk($this->disk())->put($ruta, $contenido);
 
-        return $contenido;
+        return $this->almacen->guardar($ruta, $contenido);
     }
 
     private function guardarSinRomper(callable $accion, string $mensaje): void
@@ -84,67 +90,11 @@ class ServicioPdfPedidos
 
     private function generarEntrega(Entrega $entrega): string
     {
-        $html = view('pdf.albaran', compact('entrega'))->render();
-
-        return $this->generarDesdeHtml($html);
+        return $this->ejecutor->generar($this->renderizador->renderizarEntrega($entrega));
     }
 
     private function generarReserva(Reserva $reserva): string
     {
-        $html = view('pdf.reserva', compact('reserva'))->render();
-
-        return $this->generarDesdeHtml($html);
-    }
-
-    private function generarDesdeHtml(string $html): string
-    {
-        $descriptores = [
-            0 => ['pipe', 'r'],
-            1 => ['pipe', 'w'],
-            2 => ['pipe', 'w'],
-        ];
-
-        $proceso = proc_open('node "' . base_path('resources/js/generar_pdf.cjs') . '"', $descriptores, $pipes);
-
-        if (!is_resource($proceso)) {
-            throw new \RuntimeException('No se pudo iniciar Node.js para generar el PDF.');
-        }
-
-        fwrite($pipes[0], $html);
-        fclose($pipes[0]);
-
-        $pdf = stream_get_contents($pipes[1]);
-        fclose($pipes[1]);
-
-        $errores = stream_get_contents($pipes[2]);
-        fclose($pipes[2]);
-
-        $estado = proc_close($proceso);
-
-        if ($estado !== 0) {
-            throw new \RuntimeException(trim($errores) ?: 'Error desconocido generando el PDF.');
-        }
-
-        return $pdf;
-    }
-
-    private function rutaEntrega(int $id): string
-    {
-        return $this->carpetaBase() . "/entregas/entrega_{$id}.pdf";
-    }
-
-    private function rutaReserva(int $id): string
-    {
-        return $this->carpetaBase() . "/reservas/reserva_{$id}.pdf";
-    }
-
-    private function carpetaBase(): string
-    {
-        return trim(config('floristeria.pdfs.carpeta', 'pdfs/pedidos'), '/');
-    }
-
-    private function disk(): string
-    {
-        return config('floristeria.pdfs.disk', 'local');
+        return $this->ejecutor->generar($this->renderizador->renderizarReserva($reserva));
     }
 }
