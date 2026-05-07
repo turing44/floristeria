@@ -2,13 +2,13 @@
     $path = public_path('fonts/LucidaUnicodeCalligraphy.ttf');
 
     if (file_exists($path)) {
-        $dataFont = file_get_contents($path);
-        $base64Font = 'data:font/truetype;base64,' . base64_encode($dataFont);
+        $datosFont = file_get_contents($path);
+        $base64Font = 'data:font/truetype;base64,' . base64_encode($datosFont);
     } else {
         $base64Font = '';
     }
 
-    $texto = $data['mensaje_tarjeta'] ?? '';
+    $texto = $datos['mensaje_tarjeta'] ?? '';
     $len = strlen($texto);
 @endphp
 <!DOCTYPE html>
@@ -128,7 +128,7 @@
             {{-- Mensaje Izquierda --}}
             <div class="mensajeDeLado" style="--tamanioMensaje: {{ $len > 400 ? '70%' : ($len > 240 ? '80%' : '100%') }}">
                 <p>
-                    {{ $data['mensaje_tarjeta'] }}
+                    {{ $datos['mensaje_tarjeta'] }}
                 </p>
             </div>
             
@@ -137,7 +137,7 @@
             
             {{-- Nombre Derecha --}}
             <div class="nombreDestinatario">
-                <p>{{ $data['nombre_destinatario'] ?? '' }}</p> 
+                <p>{{ $datos['nombre_destinatario'] ?? '' }}</p> 
             </div>
             
         </div>
